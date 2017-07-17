@@ -1,0 +1,14 @@
+MANIFEST.in
+StudyScheme/__init__.py
+StudyScheme/forms.py
+StudyScheme/models.py
+StudyScheme/views.py
+StudyScheme.egg-info/PKG-INFO
+StudyScheme.egg-info/SOURCES.txt
+StudyScheme.egg-info/dependency_links.txt
+StudyScheme.egg-info/not-zip-safe
+StudyScheme.egg-info/requires.txt
+StudyScheme.egg-info/top_level.txt
+StudyScheme/templates/_formhelpers.html
+StudyScheme/templates/login.html
+StudyScheme/templates/register.html
