@@ -26,11 +26,6 @@ class User(db.Model):
 
     university_id = db.Column(db.Integer, db.ForeignKey('university.id'))
 
-
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
-
     def __repr__(self):
         return '<User %r>' % self.username
 
@@ -55,10 +50,6 @@ class Major(db.Model):
     name = db.Column(db.String(60))
 
     users = db.relationship('User', secondary=user_major, backref='majors')
-    courses = db.relationship('Course', secondary=course_major, backref='majors')
-
-    def __init__(self, name):
-        self.name = name
 
 class Course(db.Model):
     __tablename__ = 'course'
