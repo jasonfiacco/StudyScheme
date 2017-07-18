@@ -4,13 +4,28 @@ from datetime import datetime
 
 db = SQLAlchemy(app)
 
+
+user_major = db.Table('user_major',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('major_id', db.Integer, db.ForeignKey('major.id'))
+)
+
+course_major = db.Table('course_major',
+    db.Column('course_id', db.Integer, db.ForeignKey('course.id')),
+    db.Column('major_id', db.Integer, db.ForeignKey('major.id'))
+)
+
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(120))
 
-    goals = db.relationship('Goal', backref='user', lazy='dynamic')
+    majors = db.relationship('Major', secondary=user_major, backref='users')
+    courses = db.relationship('Course', backref='user', lazy='dynamic')
+
+    university_id = db.Column(db.Integer, db.ForeignKey('university.id'))
+
 
     def __init__(self, username, password):
         self.username = username
@@ -34,14 +49,41 @@ class User(db.Model):
         """Anonymous users aren't supported."""
         return False
 
-class Goal(db.Model):
-    __tablename__ = 'goal'
+class Major(db.Model):
+    __tablename__ = 'major'
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(500))
-    time = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    name = db.Column(db.String(60))
 
-    def __init__(self, description, time, user_id):
-        self.descrpition = descrpition
-        self.time = time
-        self.user_id = user_id
+    users = db.relationship('User', secondary=user_major, backref='majors')
+    courses = db.relationship('Course', secondary=course_major, backref='majors')
+
+    def __init__(self, name):
+        self.name = name
+
+class Course(db.Model):
+    __tablename__ = 'course'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(60))
+    credit = db.Column(db.Integer)
+
+    user_courses = db.relationship('User_Course', backref='course', lazy='dynamic')
+    majors = db.relationship('Major', secondary=course_major, backref='courses')
+
+    university_id = db.Column(db.Integer, db.ForeignKey('university.id'))
+
+class User_Course(db.Model):
+    __tablename__ = 'user_course'
+    id = db.Column(db.Integer, primary_key=True)
+    anticipated_grade = db.Column(db.Integer)
+    actual_grade = db.Column(db.Integer)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
+
+class University(db.Model):
+    __tablename__ = 'university'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+
+    courses = db.relationship('Course', backref='university', lazy='dynamic')
+    users = db.relationship('User', backref='university', lazy='dynamic')
