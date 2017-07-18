@@ -4,7 +4,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, \
 import os
 from .models import User, db
 from .forms import *
-from flask_login import LoginManager, login_user, current_user
+from flask_login import LoginManager, login_user, logout_user, current_user
 
 db.init_app(app)
 login_manager = LoginManager()
@@ -55,6 +55,7 @@ def logout():
     logout_user()
     return redirect("index")
 
-@app.route('/goals')
-def goals():
-    return "Hi " + current_user.username
+
+@app.route('/academic_manager', methods=['GET', 'POST'])
+def academic_manager():
+    return render_template('academic_manager.html', entries=entries, form=form)
