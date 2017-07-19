@@ -62,6 +62,7 @@ class Major(db.Model):
         self.credits_needed = credits_needed
         self.user_id = user_id
 
+
 class Course(db.Model):
     __tablename__ = 'course'
     id = db.Column(db.Integer, primary_key=True)
