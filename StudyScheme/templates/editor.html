@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% block body %}
+  <div class="container">
+    <div class="col-md-12">
+
+    </div>
+    <table class="table">
+      <tr>
+        <th colspan=4>Intended Major(s)</th>
+      </tr>
+      <tr>
+        <th class="col-sm-6">Major</th>
+        <th class="col-sm-2">Credits Needed</th>
+        <th class="col-sm-2">Credits Remaining</th>
+        <th class="col-sm-2">Major GPA</th>
+      </tr>
+    </table>
+    <table class="table">
+      <tr>
+        <th colspan=4>Course Planner</th>
+        <td>
+          <select class="form-control">
+            <option>Sample Semester</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th class="col-sm-4">Course Title</th>
+        <th class="col-sm-2">Credits</th>
+        <th class="col-sm-2">Contributes To</th>
+        <th class="col-sm-2">Anticipated Grade</th>
+        <th class="col-sm-2">Actual Grade</th>
+      </tr>
+    </table>
+    <table class="table">
+      <tr>
+        <th>GPA Manager</th>
+      </tr>
+      <tr>
+        <td>Actual GPA:<span id="actual_gpa"></span></td>
+      </tr>
+      <tr>
+        <td>Anticipated GPA by 
+          <span>
+            <select>
+              <option>Sample Semester</option>
+            </select>
+          </span>
+          :
+          <span id="anticipated_gpa">
+            
+          </span>
+        </td>      
+      </tr>
+      <tr>
+        <td>Highest GPA by 
+          <span>
+            <select>
+              <option>Sample Semester</option>
+            </select>
+          </span>
+          :
+          <span id="highest_gpa">
+            
+          </span>
+        </td>
+      </tr>
+    </table>
+  </div>
+{% endblock %}
