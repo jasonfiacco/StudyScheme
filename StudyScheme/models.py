@@ -20,11 +20,16 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(120))
+    total_credits_needed = db.Column(db.Integer)
 
-    majors = db.relationship('Major', secondary=user_major, backref='users')
-    courses = db.relationship('Course', backref='user', lazy='dynamic')
+    majors = db.relationship('Major', backref='user', lazy='dynamic')
+    user_courses = db.relationship('User_Course', backref='user', lazy='dynamic')
 
     university_id = db.Column(db.Integer, db.ForeignKey('university.id'))
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -48,8 +53,14 @@ class Major(db.Model):
     __tablename__ = 'major'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60))
+    credits_needed = db.Column(db.Integer)
 
-    users = db.relationship('User', secondary=user_major, backref='majors')
+    user_id = db.relationship('User', db.ForeignKey('user.id'))
+
+    def __init__(self, name, credits_needed, user_id):
+        self.name = name
+        self.credits_needed = credits_needed
+        self.user_id = user_id
 
 class Course(db.Model):
     __tablename__ = 'course'

@@ -1,5 +1,5 @@
 from StudyScheme import app
-from flask import Flask, request, session, g, redirect, url_for, abort, \
+from flask import Flask, request, session, jsonify, g, redirect, url_for, abort, \
     render_template, flash
 import os
 from .models import User, db
@@ -15,7 +15,7 @@ login_manager.login_view = "login.html"
 
 @app.route('/index')
 def index():
-    return '<h1>Hello world</h1>'
+    return render_template('index.html')
 
 @login_manager.user_loader
 def user_loader(user_id):
@@ -32,7 +32,7 @@ def register():
             db.session.commit()
             flash('User successfully registered')
             login_user(new_user, remember=True)
-            return redirect(url_for('goals'))
+            return redirect(url_for('academic_manager'))
         else:
             flash('User already exists')
     return render_template('register.html', form=form)
@@ -44,8 +44,9 @@ def login():
     if request.method == 'POST' and form.validate():
         registered_user = User.query.filter_by(username=form.username.data, password=form.password.data).first()
         if registered_user:
+            session['logged_in'] = True
             login_user(registered_user, remember=True)
-            return redirect(url_for('goals'))
+            return redirect(url_for('academic_manager'))
         else:
             flash('Username or password is invalid')
     return render_template('login.html', form=form)
@@ -58,4 +59,16 @@ def logout():
 
 @app.route('/academic_manager', methods=['GET', 'POST'])
 def academic_manager():
-    return render_template('academic_manager.html', entries=entries, form=form)
+    if request.method == 'GET':
+        return jsonify()
+
+    return render_template('academic_manager.html')
+
+@app.route('/academic_manager/add_major', methods=['POST'])
+def add_major():
+    new_major = Major()
+
+@app.route('/academic_manager/update_majors', methods=['POST'])
+def update_majors():
+     updated_majors = request.form
+     for key, value in updated_majors.iteritems():
