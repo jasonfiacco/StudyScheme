@@ -3,3 +3,6 @@ venv/*
 
 #python compiiled
 *.pyc
+__pycache__/*
+StudyScheme.egg-info/*
+StudyScheme/__pycache__/*
