@@ -78,7 +78,7 @@ def create_major():
 
     new_major = Major(' ', 0, current_user.id)
     db.session.add(new_major)
-    db.commit()
+    db.session.commit()
     return jsonify( {'major': jsonify_major(new_major)} ), 201
 
 @app.route('/academic_manager/update_majors', methods=['PUT'])
