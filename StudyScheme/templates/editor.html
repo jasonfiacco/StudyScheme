@@ -2,9 +2,14 @@
 {% block body %}
   <div class="container">
     <div class="col-md-12">
-
+      <div class="col-sm-6">
+        Total Credits Needed: <span id="credits_needed"></span>
+      </div>
+      <div class="col-sm-6 text-right">
+        Credits Remaining: <span id="credits_remaining"></span>
+      </div>
     </div>
-    <table class="table">
+    <table class="table" id="intended_majors">
       <tr>
         <th colspan=4>Intended Major(s)</th>
       </tr>
@@ -15,7 +20,7 @@
         <th class="col-sm-2">Major GPA</th>
       </tr>
     </table>
-    <table class="table">
+    <table class="table" id="course_planner">
       <tr>
         <th colspan=4>Course Planner</th>
         <td>
@@ -32,7 +37,7 @@
         <th class="col-sm-2">Actual Grade</th>
       </tr>
     </table>
-    <table class="table">
+    <table class="table" id="gpa_manager">
       <tr>
         <th>GPA Manager</th>
       </tr>
@@ -67,4 +72,8 @@
       </tr>
     </table>
   </div>
+  <script src={{url_for("static", filename="user.js")}}></script>
+  <script src={{url_for("static", filename="major.js")}}></script>
+  <script src={{url_for("static", filename="course.js")}}></script>
+  <script src={{url_for("static", filename="academic_manager.js")}}></script>
 {% endblock %}
