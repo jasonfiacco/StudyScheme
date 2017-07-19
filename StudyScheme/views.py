@@ -56,18 +56,21 @@ def logout():
     logout_user()
     return redirect("index")
 
+@app.route('/editor', methods=['GET'])
+def editor():
+    return render_template('editor.html')
 
 @app.route('/academic_manager', methods=['GET'])
 def academic_manager():
     if request.method == 'GET':
-        return jsonify({'majors': [jsonify_major(major) for major in current_user.majors], 'courses': [course for course in current_user.courses]})
+        return jsonify({'majors': [jsonify_major(major) for major in current_user.majors]}) #, 'courses': [course for course in current_user.courses]
 
 @app.route('/academic_manager/create_major', methods=['POST'])
 def create_major():
     if not request.json:
         abort(400)
 
-    new_major = Major('', 0, current_user.id)
+    new_major = Major(' ', 0, current_user.id)
     db.session.add(new_major)
     db.commit()
     return jsonify( {'major': jsonify_major(new_major)} ), 201

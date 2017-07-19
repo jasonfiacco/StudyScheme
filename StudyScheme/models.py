@@ -55,7 +55,7 @@ class Major(db.Model):
     name = db.Column(db.String(60))
     credits_needed = db.Column(db.Integer)
 
-    user_id = db.relationship('User', db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, name, credits_needed, user_id):
         self.name = name
