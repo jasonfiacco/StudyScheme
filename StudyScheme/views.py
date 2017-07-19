@@ -57,18 +57,32 @@ def logout():
     return redirect("index")
 
 
-@app.route('/academic_manager', methods=['GET', 'POST'])
+@app.route('/academic_manager', methods=['GET'])
 def academic_manager():
     if request.method == 'GET':
-        return jsonify()
+        return jsonify({'majors': [jsonify_major(major) for major in current_user.majors], 'courses': [course for course in current_user.courses]})
 
-    return render_template('academic_manager.html')
+@app.route('/academic_manager/create_major', methods=['POST'])
+def create_major():
+    if not request.json:
+        abort(400)
 
-@app.route('/academic_manager/add_major', methods=['POST'])
-def add_major():
-    new_major = Major()
+    new_major = Major('', 0, current_user.id)
+    db.session.add(new_major)
+    db.commit()
+    return jsonify( {'major': jsonify_major(new_major)} ), 201
 
-@app.route('/academic_manager/update_majors', methods=['POST'])
+@app.route('/academic_manager/update_majors', methods=['PUT'])
 def update_majors():
-     updated_majors = request.form
-     for key, value in updated_majors.iteritems():
+     for updated_major in request.json['majors']:
+         major = current_user.majors[updated_major[id]]
+         major.name = updated_major[name]
+         major.credits_needed = updated_major[credits_needed]
+     return jsonify({'majors': [jsonify_major(major) for major in current_user.majors]})
+
+def jsonify_major(major):
+    new_major = {}
+    new_major['id'] = major.id
+    new_major['name'] = major.name
+    new_major['credits_needed'] = major.credits_needed
+    return new_major
