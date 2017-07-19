@@ -23,9 +23,7 @@ class User(db.Model):
     total_credits_needed = db.Column(db.Integer)
 
     majors = db.relationship('Major', backref='user', lazy='dynamic')
-    user_courses = db.relationship('User_Course', backref='user', lazy='dynamic')
-
-    university_id = db.Column(db.Integer, db.ForeignKey('university.id'))
+    courses = db.relationship('Course', backref='user', lazy='dynamic')
 
     def __init__(self, username, password):
         self.username = username
@@ -68,25 +66,14 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60))
     credit = db.Column(db.Integer)
-
-    user_courses = db.relationship('User_Course', backref='course', lazy='dynamic')
-    majors = db.relationship('Major', secondary=course_major, backref='courses')
-
-    university_id = db.Column(db.Integer, db.ForeignKey('university.id'))
-
-class User_Course(db.Model):
-    __tablename__ = 'user_course'
-    id = db.Column(db.Integer, primary_key=True)
     anticipated_grade = db.Column(db.Integer)
     actual_grade = db.Column(db.Integer)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
 
-class University(db.Model):
-    __tablename__ = 'university'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-
-    courses = db.relationship('Course', backref='university', lazy='dynamic')
-    users = db.relationship('User', backref='university', lazy='dynamic')
+    def __init__(self, name, credit, anticipated_grade, actual_grade, user_id):
+        self.name = name
+        self.credit = credit
+        self.anticipated_grade = anticipated_grade
+        self.actual_grade = actual_grade
+        self.user_id = user_id

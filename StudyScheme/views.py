@@ -31,6 +31,7 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             flash('User successfully registered')
+            session['logged_in'] = True
             login_user(new_user, remember=True)
             return redirect(url_for('academic_manager'))
         else:
@@ -63,7 +64,7 @@ def editor():
 @app.route('/academic_manager', methods=['GET'])
 def academic_manager():
     if request.method == 'GET':
-        return jsonify({'majors': [jsonify_major(major) for major in current_user.majors]}) #, 'courses': [course for course in current_user.courses]
+        return jsonify({'id': current_user.id, 'credits_needed': current_user.credits_needed, 'majors': [jsonify_major(major) for major in current_user.majors], 'courses': [course for course in current_user.courses] })
 
 @app.route('/academic_manager/create_major', methods=['POST'])
 def create_major():
@@ -78,9 +79,9 @@ def create_major():
 @app.route('/academic_manager/update_majors', methods=['PUT'])
 def update_majors():
      for updated_major in request.json['majors']:
-         major = current_user.majors[updated_major[id]]
-         major.name = updated_major[name]
-         major.credits_needed = updated_major[credits_needed]
+         major = current_user.majors[updated_major['id']]
+         major.name = updated_major['name']
+         major.credits_needed = updated_major['credits_needed']
      return jsonify({'majors': [jsonify_major(major) for major in current_user.majors]})
 
 def jsonify_major(major):
@@ -89,3 +90,31 @@ def jsonify_major(major):
     new_major['name'] = major.name
     new_major['credits_needed'] = major.credits_needed
     return new_major
+
+#Course controllers
+@app.route('/academic_manager/create_course', methods=['POST'])
+def create_course():
+    if not request.json:
+        abort(400)
+    new_course = Course(' ', 1, -1, -1)
+    db.session.add(new_course)
+    db.commit()
+    return jsonify( {'course': jsonify_course(new_course)} ), 201
+
+@app.route('/academic_manager/update_courses', methods=['PUT'])
+def update_courses():
+     for updated_course in request.json['courses']:
+         course = current_user.courses[updated_course['id']]
+         course.name = updated_course['name']
+         course.credit = updated_course['credit']
+         course.anticipated_grade = updated_course['anticipated_grade']
+         course.actual_grade = updated_course['actual_grade']
+     return jsonify({'courses': [jsonify_course(course) for course in current_user.courses]})
+
+def jsonify_course(course):
+    new_course = {}
+    new_course['id'] = course.id
+    new_course['name'] = course.name
+    new_course['credit'] = course.credit
+    new_course['anticipated_grade'] = course.anticipated_grade
+    new_course['actual_grade'] = course.actual_grade
