@@ -48,6 +48,10 @@ class Course {
     return this.id;
   }
 
+  getName() {
+    return this.name;
+  }
+
   /**
   * Sets the actual grade of the course
   * @param grade[integer] representing grade

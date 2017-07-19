@@ -2,8 +2,8 @@ class User {
   constructor(id, creditsNeeded) {
     this.id = id;
     this.creditsNeeded = creditsNeeded;
-    this.courses = [];
-    this.majors = [];
+    this.courses = {};
+    this.majors = {};
   }
 
   creditsTaken() {
@@ -33,11 +33,11 @@ class User {
   }
 
   addMajor(major) {
-    this.majors.push(major);
+    this.majors[major.getID()] = major;
   }
 
   addCourse(course) {
-    this.courses.push(course);
+    this.courses[course.getID()] = course;
   }
 
   currentGPA() {
@@ -87,17 +87,33 @@ class User {
     return this.majors;
   }
 
+  getMajor(id) {
+    return this.majors[id];
+  }
+
+  getCourse(id) {
+    return this.courses[id];
+  }
+
   getMajorIDList() {
-    var ids = []
-    for (var major in this.majors) {
-      major = this.majors[major];
-      ids.push(major.getID());
+    return Object.keys(this.majors);
+  }
+
+  getMajorNameList() {
+    var names = [];
+    for (var majorID in this.majors) {
+      var major = this.majors[majorID];
+      names.push(major.getName());
     }
-    return ids;
+    return names;
+  }
+
+  getCourseIDList() {
+    return Object.keys(this.courses);
   }
 
   setCreditsNeeded(credits) {
-    this.creditsNeeded = credits;
+    this.creditsNeeded = parseInt(credits);
   }
   /////////////////////////
 

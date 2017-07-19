@@ -1,4 +1,6 @@
-user = new User();
+var user = new User();
+
+var MAX_SEMESTERS = 8;
 
 var GRADE_CONVERSIONS = {
   "-1" : "-",
@@ -32,8 +34,14 @@ function getGPA(score) {
 * @param id[int], major[string], creditsNeeded[double]
 * @return boolean indicating success or failure
 **/
-function addMajor(id, major, creditsNeeded) {
-  var major = new Major(id, major, creditsNeeded);
+function addMajor(id, name, creditsNeeded) {
+  if (user.getMajor(id) ||  user.getMajorNameList().includes(name)) {
+    console.log("Major " + id + " or " + name + " already exists");
+    return false;
+  }
+
+  var major = new Major(id, name, creditsNeeded);
+
   if (renderMajor(major)) {
     user.addMajor(major);
     return true;
@@ -47,11 +55,6 @@ function addMajor(id, major, creditsNeeded) {
 * @return boolean indicating success or failure
 **/
 function renderMajor(major) {
-  if (user.getMajorIDList().includes(major.getID())) {
-    console.log("Major " + major.getID() + " already exists");
-    return false;
-  }
-
   var row = document.createElement("tr");
   row.id = "major-" + major.getID();
 
@@ -86,22 +89,156 @@ function renderMajor(major) {
   return true;
 }
 
-function renderCourse(course) {
-  var row = document.createElement("tr");
-  row.id = "course-" + id;
+function createCourse() {
+  //TODO: ajax stuff
 
-  var courseTitleData = document.createElement("td");
-  courseTitleData.text = course;
-
-  var creditsData = document.createElement("td");
-  creditsData.text = credits;
-
-  var contributesToData = document.createElement("td");
 
 }
 
-$(function() {
-  $("#credits_needed").change(function(){
-    $("#credits_remaining").text(parseInt($("#credits_needed").val()) - creditsCompleted());
+function addCourse(id, name, credits, semester) {
+  if (user.getCourse(id)) {
+    console.log("Course " + id + " already exists");
+    return false;
+  }
+
+  var course = new Course(id, name, credits, semester);
+
+  if (renderCourse(course)) {
+    user.addCourse(course);
+    return true;
+  }
+  return false;
+}
+
+function renderCourse(course) {
+  var row = document.createElement("tr");
+  row.id = "course-" + course.getID();
+
+  var courseTitleData = document.createElement("td");
+  courseTitleData.innerHTML = course.getName();
+
+  var creditsData = document.createElement("td");
+  creditsData.innerHTML = course.getCredits();
+
+  var contributesToData = document.createElement("td");
+  //TODO: implement contributesTo
+  contributesToData.innerHTML = "Not Yet Implemented";
+
+
+  var createGradeDropdowns = function(val) {
+    var select = document.createElement("select");
+    for (var gradeID in GRADE_CONVERSIONS) {
+      var option = document.createElement("option");
+      option.value = gradeID;
+      option.innerHTML = GRADE_CONVERSIONS[gradeID];
+      select.appendChild(option);
+    }
+    return select;
+  }
+
+  var anticipatedGradeData = document.createElement("td");
+  var select = createGradeDropdowns();
+  select.id = "anticipated-" + course.getID();
+  select.className = "anticipated-grade";
+  select.value = course.getAnticipatedGrade();
+  anticipatedGradeData.appendChild(select);
+
+  var actualGradeData = document.createElement("td");
+  select = createGradeDropdowns();
+  select.id = "actual-" + course.getID();
+  select.className = "actual-grade";
+  select.value = course.getActualGrade();
+  actualGradeData.appendChild(select);
+
+  row.appendChild(courseTitleData);
+  row.appendChild(creditsData);
+  row.appendChild(contributesToData);
+  row.appendChild(anticipatedGradeData);
+  row.appendChild(actualGradeData);
+
+  $("#course_planner").append(row);
+
+  return true;
+}
+
+function getIdFromHtmlId(HtmlId) {
+  return HtmlId.split("-")[1];
+}
+
+function sendCurrentUser() {
+  //TODO: ajax to send JSON of user
+  return;
+}
+
+$(window).on("load", function(){
+  /**
+  * creates a jQuery DOM Selector for semesters
+  * @return jQuery object that is a selector
+  **/
+  function createSemesterSelector() {
+    var select = $("<select></select>");
+    for (var x = 1; x <= MAX_SEMESTERS; x++) {
+      var option = $("<option></option>").val(x).text("Semester " + x);
+      select.append(option);
+    }
+    return select;
+  }
+  //add semesters
+  $("#course_planner_semester").append(createSemesterSelector());
+  $("#anticipated_GPA_semester").append(createSemesterSelector());
+  $("#highest_GPA_semester").append(createSemesterSelector());
+});
+
+$(document).ready(function() {
+  console.log("page ready");
+
+  //change in course credits needed
+  $("#intended_majors").on("change", ".creditsNeeded", function() {
+    var id = getIdFromHtmlId($(this).attr("id"));
+    var major = user.getMajor(id);
+    major.setCreditsNeeded($(this).val());
+    var target = "#creditsRemaining-" + id;
+    $(target).html(major.creditsRemaining())
+    sendCurrentUser();
+  });
+
+  $("#add_course").click(function() {
+    $.ajax({
+      url: "/academic_manager/create_course/",
+      contentType: "application/json",
+      type: "POST",
+      dataType: "application/json",
+
+      data: JSON.stringify({
+        "semester" : $("#course_planner_semester").val(),
+      }),
+
+      success: function(result) {
+        var obj = $.parseJSON(result);
+        addCourse(obj.id, obj.name, obj.credits, obj.semester);
+      },
+
+      failure: function(result) {
+        console.log("create_course request failed");
+      },
+    });
+  });
+
+  $("#add_major").click(function() {
+    $.ajax({
+      url: "/academic_manager/create_major/",
+      contentType: "application/json",
+      type: "POST",
+      dataType: "application/json",
+
+      success: function(result) {
+        var obj = $.parseJSON(result);
+        addMajor(obj.id, obj.name, obj.creditsNeeded);
+      },
+      
+      failure: function(result) {
+        console.log("create_major request failed");
+      },
+    });
   });
 });

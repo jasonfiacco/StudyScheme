@@ -45,7 +45,7 @@ class Major {
   }
 
   setCreditsNeeded(credits) {
-    this.creditsNeeded = credits;
+    this.creditsNeeded = parseInt(credits);
   }
   ////////////////////////
 
