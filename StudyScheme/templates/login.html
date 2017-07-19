@@ -1,19 +1,21 @@
 {% extends "layout.html" %}
 {% block body %}
   {% from "_formhelpers.html" import render_field %}
-  <form method="POST" action="/login">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          <li> {{message}} </li>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-    {{ form.csrf_token }}
-    {{ render_field(form.username )}}
-    {{ render_field(form.password) }}
-    <input type="submit" value="Submit">
-    </br>
-    <a href="{{url_for('register')}}">Register</a>
-  </form>
+  <div class="container">
+    <form method="POST" action="/login">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <li> {{message}} </li>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {{ form.csrf_token }}
+      {{ render_field(form.username )}}
+      {{ render_field(form.password) }}
+      <input type="submit" value="Submit">
+      </br>
+      <a class="btn btn-info" href="{{url_for('register')}}">Register</a>
+    </form>
+  </div>
 {% endblock %}

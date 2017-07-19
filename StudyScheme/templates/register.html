@@ -1,18 +1,21 @@
-<html>
-{% from "_formhelpers.html" import render_field %}
-<form method="POST" action="/register">
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      {% for message in messages %}
-        <li> {{message}} </li>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-  {{ form.csrf_token }}
-  {{ render_field(form.username )}}
-  {{ render_field(form.password) }}
-  {{ render_field(form.password_confirm) }}
-  <input type="submit" value="Submit">
-  <a href="{{url_for('login')}}">Log in</a>
-</form>
-</html>
+{% extends "layout.html" %}
+{% block body %}
+  {% from "_formhelpers.html" import render_field %}
+  <div class="container">
+    <form method="POST" action="/register">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            <li> {{message}} </li>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {{ form.csrf_token }}
+      {{ render_field(form.username )}}
+      {{ render_field(form.password) }}
+      {{ render_field(form.password_confirm) }}
+      <input class="btn btn-default" type="submit" value="Submit">
+    </form>
+    <br>
+  </div>
+{% endblock %}
