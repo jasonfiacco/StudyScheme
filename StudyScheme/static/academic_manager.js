@@ -9,6 +9,7 @@ var editorValues = {
 };
 
 var GRADE_CONVERSIONS = {
+  -1 : '-',
    0 : 'F',
    2 : 'D-',
    3 : 'D',
@@ -21,8 +22,258 @@ var GRADE_CONVERSIONS = {
   10 : 'B+',
   11 : 'A-',
   12 : 'A',
-  13 : 'A+'
+  13 : 'A+',
 };
+
+class Course {
+  constructor(id, name, credits, semester) {
+    this.id = id;
+    this.name = name;
+    this.credits = credits;
+    this.semester = semester;
+    this.majors = [];
+    this.actualGrade = -1;
+    this.anticipatedGrade = -1;
+  }
+
+  /**
+  * Determines if class is taken yet
+  * @return boolean representing whether course has been taken yet
+  **/
+  completed() {
+    return this.actualGrade != -1;
+  }
+
+  /**
+  * Determines if this course has an anticipated grade
+  * @return boolean representing whether course has anticipated grade
+  **/
+  anticipated() {
+    return this.anticipatedGrade != -1;
+  }
+
+  /////////////////
+  //setters and getters
+
+  /**
+  * gets the number of credits this course is worth
+  * @return double or integer
+  **/
+  getCredits() {
+    return this.credits;
+  }
+
+  getActualGrade() {
+    return this.actualGrade;
+  }
+
+  getAnticipatedGrade() {
+    return this.anticipatedGrade;
+  }
+
+  getID() {
+    return this.id;
+  }
+
+  /**
+  * Sets the actual grade of the course
+  * @param grade[integer] representing grade
+  **/
+  setActualGrade(grade) {
+    this.actualGrade = grade;
+  }
+
+  /**
+  * Sets the anticipated grade of the course
+  * @param grade[integer] representing grade
+  **/
+  setAnticipatedGrade(grade) {
+    this.anticipatedGrade = grade;
+  }
+  //////////////////////
+
+  //////////////////////
+  //JSON stuff
+  getMajorIDList() {
+    var majors = [];
+    for (major : majors) {
+      majors.push(major.getID());
+    }
+    return majors;
+  }
+
+  toJSON() {
+    return {
+      "id" : this.id, 
+      "name" : this.name,
+      "actualGrade" : this.actualGrade,
+      "anticipatedGrade" : this.anticipatedGrade;
+      "semester" : this.semester;
+      "majors" : this.getMajorIDList();
+    };
+  }
+}
+
+class Major {
+  constructor(id, name, creditsNeeded) {
+    this.id = id;
+    this.name = name;
+    this.creditsNeeded = creditsNeeded;
+    this.courses = []
+  }
+
+  creditsTaken() {
+    var credits = 0;
+    for (course in courses) {
+      if (course.completed()) {
+        credits += course.getCredits();
+      }
+    }
+    return credits;
+  }
+
+  creditsRemaining() {
+    return max(this.creditsNeeded - this.creditsTaken(), 0);
+  }
+
+  currentGPA() {
+    var weightedTotal = 0;
+    for (course in courses) {
+      weightedTotal += course.actualGrade * course.credits;
+    }
+    return getGPA(weightedTotal / this.creditsTaken());
+  }
+
+  /////////////////////////
+  //setters and getters
+  getID() {
+    return this.id;
+  }
+
+  getCreditsNeeded() {
+    return creditsNeeded;
+  }
+
+  setCreditsNeeded(credits) {
+    this.creditsNeeded = credits;
+  }
+  ////////////////////////
+
+  //JSON Stuff
+  getCourseIDList() {
+    var courseIDs = []
+    for (course in courses) {
+      courseIDs.push(course.getID);
+    }
+    return courseIDs;
+  }
+
+  toJSON() {
+    return {
+      "id" : this.id,
+      "name" : this.name,
+      "creditsNeeded" : this.creditsNeeded,
+      "courses" : this.getCourseIDList();
+    };
+  }
+}
+
+class User {
+  constructor(id, creditsNeeded) {
+    this.id = id;
+    this.creditsNeeded = creditsNeeded;
+    this.courses = [];
+    this.majors = [];
+  }
+
+  creditsTaken() {
+    var credits = 0;
+    for (course in courses) {
+      if (course.completed()) {
+        credits += course.getCredits();
+      }
+    }
+    return credits;
+  }
+
+  anticipatedCreditsTaken() {
+    var credits = 0;
+    for (course in courses) {
+      if (course.completed() || course.anticipated()) {
+        credits += course.getCredits();
+      }
+    }
+    return credits;
+  }
+
+  creditsRemaining() {
+    return max(creditsNeeded - this.creditsTaken(), 0)
+  }
+
+  addMajor(major) {
+    this.majors.push(major);
+  }
+
+  addCourse(course) {
+    this.courses.push(course);
+  }
+
+  currentGPA() {
+    var weightedTotal = 0;
+    for (course in courses) {
+      if (course.completed()) {
+        weightedTotal += course.getCredits() * course.getActualGrade();
+      }
+    }
+    return getGPA(weightedTotal / this.creditsTaken());
+  }
+
+  anticipatedGPA() {
+    var weightedTotal = 0;
+    for (course in courses) {
+      if (course.completed()) {
+        weightedTotal += course.getCredits() * course.getActualGrade();
+      } 
+      else if (course.anticipated()) {
+        weightedTotal += course.getCredits() * course.getAnticipatedGrade();
+      }
+    }
+    return getGPA(weightedTotal / this.anticipatedCreditsTaken());    
+  }
+
+  /**
+  * Calculates the highest GPA of user assuming they only take
+  * as many credits as needed
+  * @return double of highest grade user can obtain
+  **/
+  highestGPA() {
+    var weightedTotal = 0;
+    weightedTotal += this.currentGPA() * this.creditsTaken();
+    weightedTotal += 4.0 * this.creditsRemaining();
+    return getGPA(weightedTotal / this.creditsNeeded);
+  }
+
+  /////////////////////////
+  // Getters and Setters
+  getCreditsNeeded() {
+    return this.creditsNeeded;
+  }
+
+  setCreditsNeeded(credits) {
+    this.creditsNeeded = credits;
+  }
+  /////////////////////////
+
+  //JSON stuff
+  toJSON() {
+    return {
+      "id" : id,
+      "creditsNeeded" : this.creditsNeeded,
+      "courses" : courses,
+      "majors" : majors
+    }
+  }
+}
 
 /**
 * Calculates the grade from the current score
@@ -38,10 +289,15 @@ function getGPA(score) {
 * @return integer representing the total number of credits completed
 **/
 function creditsCompleted() {
+  var user = editorValues["user"];
   var courses = editorValues["courses"];
   var credits = 0;
-  for (var course : courses) {
-    credits += courses[course]["credits"];
+  for (var courseID in courses) {
+    var course = courses[courseID];
+    if (course["semester"] > user["semester"]) {
+      continue;
+    }
+    credits += course["credits"];
   }
   return credits;
 }
@@ -59,7 +315,7 @@ function majorCreditsCompleted(majorID) {
   }
   major = majors[majorID];
   credits = 0;
-  for (var courseID : major["courses"]) {
+  for (var courseID in major["courses"]) {
     credits += getCourseCredits(courseID);
   }
   return credits;
@@ -79,12 +335,40 @@ function getCourseCredits(courseID) {
   return courses[courseID]["credits"];
 }
 
-function actualAverageGPA() {
-  return 0;
+
+
+/**
+* Fetches the grade by type actual or anticipated
+* @param type[String] type of grade calulation (actual vs anticipated)
+* @return double representing the calculated GPA
+**/
+function averageGPAHelper(type, startSemester, maxSemester) {
+  var courses = editorValues["courses"];
+  var weightedSum = 0;
+  for (courseID in courses) {
+    var course = courses[courseID];
+    if (course["semester"] < startSemester || course["semester"] > maxSemester) {
+      continue;
+    }
+    weightedSum += course[type] * course['credits'];
+  }
+  return getGPA(weightedSum / creditsCompleted());
 }
 
+/**
+* gets the actual GPA
+* @return double representing actual GPA
+**/
+function actualAverageGPA() {
+  return averageGPAHelper('actual_grade', 0, editorValues["user"]["semester"]);
+}
+
+/**
+* get the the Anticipated GPA 
+*
+**/
 function anticipatedAverageGPA() {
-  return 0;
+  return averageGPAHelper('anticipated_grade');
 }
 
 function highestPossibleGPA() {
