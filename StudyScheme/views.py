@@ -105,7 +105,7 @@ def create_course():
         abort(400)
     new_course = Course(' ', 1, -1, -1, current_user.id)
     db.session.add(new_course)
-    db.commit()
+    db.session.commit()
     return jsonify( {'course': jsonify_course(new_course)} ), 201
 
 @app.route('/academic_manager/update_courses', methods=['PUT'])
