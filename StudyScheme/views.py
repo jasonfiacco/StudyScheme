@@ -89,3 +89,7 @@ def jsonify_major(major):
     new_major['name'] = major.name
     new_major['credits_needed'] = major.credits_needed
     return new_major
+
+@app.route('/static/academic_manager')
+def sendJS():
+    return app.send_static_file('/static/academic_manager.js')
