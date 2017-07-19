@@ -47,6 +47,10 @@ class Major {
   setCreditsNeeded(credits) {
     this.creditsNeeded = parseInt(credits);
   }
+
+  setName(name) {
+    this.name = name;
+  }
   ////////////////////////
 
   //JSON Stuff

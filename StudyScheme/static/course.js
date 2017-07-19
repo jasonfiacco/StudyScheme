@@ -52,6 +52,14 @@ class Course {
     return this.name;
   }
 
+  setCredits(credits) {
+    this.credits = credits;
+  }
+
+  setName(name) {
+    this.name = name;
+  }
+
   /**
   * Sets the actual grade of the course
   * @param grade[integer] representing grade

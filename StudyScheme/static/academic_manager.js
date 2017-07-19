@@ -51,7 +51,7 @@ function addMajor(id, name, creditsNeeded) {
 
 /**
 * Adds a major to the intended_majors tables
-* @param id[int], major[string], creditsNeeded[double]
+* @param major[Major]
 * @return boolean indicating success or failure
 **/
 function renderMajor(major) {
@@ -59,7 +59,13 @@ function renderMajor(major) {
   row.id = "major-" + major.getID();
 
   var majorData = document.createElement("td");
-  majorData.innerHTML = major.getName();
+  var majorEntry = document.createElement("input");
+  majorEntry.type = "text";
+  majorEntry.value = major.getName();
+  majorEntry.id = "majorName-" + major.getID();
+  majorEntry.className += "majorName"
+  majorEntry.className += " major-field";
+  majorData.appendChild(majorEntry);
 
   //render input for credits needed
   var creditsData = document.createElement("td");
@@ -67,7 +73,8 @@ function renderMajor(major) {
   creditsEntry.type = "text";
   creditsEntry.value = major.getCreditsNeeded();
   creditsEntry.id = "creditsNeeded-" + major.getID();
-  creditsEntry.className += "creditsNeeded"
+  creditsEntry.className += "creditsNeeded";
+  creditsEntry.className += " major-field";
   creditsData.appendChild(creditsEntry);
 
   //render remaining credits needed 
@@ -89,12 +96,11 @@ function renderMajor(major) {
   return true;
 }
 
-function createCourse() {
-  //TODO: ajax stuff
-
-
-}
-
+/**
+* Creates a new course, renders it, and adds it to the current user
+* @param id[int], name[String], credits[double], semester[int]
+* @return boolean represeting success
+**/
 function addCourse(id, name, credits, semester) {
   if (user.getCourse(id)) {
     console.log("Course " + id + " already exists");
@@ -110,15 +116,28 @@ function addCourse(id, name, credits, semester) {
   return false;
 }
 
+/**
+* Renders the course presented onto course table
+* @param course[Course]
+* @return boolean representing success
+**/
 function renderCourse(course) {
   var row = document.createElement("tr");
   row.id = "course-" + course.getID();
 
   var courseTitleData = document.createElement("td");
-  courseTitleData.innerHTML = course.getName();
+  var courseTitleInput = document.createElement("input");
+  courseTitleInput.value = course.getName();
+  courseTitleInput.className += " course-title";
+  courseTitleInput.id = "courseTitle-" + course.getID();
+  courseTitleData.appendChild(courseTitleInput);
 
   var creditsData = document.createElement("td");
-  creditsData.innerHTML = course.getCredits();
+  var creditsInput = document.createElement("input");
+  creditsInput.value = course.getCredits();
+  creditsInput.className += " course-credits";
+  creditsInput.id = "courseCredits-" + course.getID();
+  creditsData.appendChild(creditsInput);
 
   var contributesToData = document.createElement("td");
   //TODO: implement contributesTo
@@ -160,14 +179,8 @@ function renderCourse(course) {
 
   return true;
 }
-
 function getIdFromHtmlId(HtmlId) {
   return HtmlId.split("-")[1];
-}
-
-function sendCurrentUser() {
-  //TODO: ajax to send JSON of user
-  return;
 }
 
 $(window).on("load", function(){
@@ -183,25 +196,89 @@ $(window).on("load", function(){
     }
     return select;
   }
-  //add semesters
+  
+  /**
+  * Adds the semesters to the various dropdowns
+  **/
   $("#course_planner_semester").append(createSemesterSelector());
   $("#anticipated_GPA_semester").append(createSemesterSelector());
   $("#highest_GPA_semester").append(createSemesterSelector());
 });
 
+function sendCurrentMajor(major) {
+  //TODO: ajax to send JSON of user
+  console.log("sending major " + major.getID());
+  return;
+}
+
+function sendCurrentCourse(course) {
+  //TODO: ajax to send JSON of user
+  console.log("sending course " + course.getID());
+  return;
+}
+
 $(document).ready(function() {
   console.log("page ready");
 
-  //change in course credits needed
+  /**
+  * When the user changes the credits needed for a major
+  * Updates the major in user
+  * and updates the credits remaining display for the major
+  * Finally sends the updated major to the server
+  **/
   $("#intended_majors").on("change", ".creditsNeeded", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var major = user.getMajor(id);
     major.setCreditsNeeded($(this).val());
     var target = "#creditsRemaining-" + id;
     $(target).html(major.creditsRemaining())
-    sendCurrentUser();
+    sendCurrentMajor(major);
   });
 
+  /**
+  * When the user changes the major name
+  * updates major in the user
+  * and sends the updated major to the server
+  **/
+  $("#intended_majors").on("change", ".majorName", function() {
+    var id = getIdFromHtmlId($(this).attr("id"));
+    var major = user.getMajor(id);
+    major.setName($(this).val());
+    sendCurrentMajor(major);
+  });
+
+  $("#course_planner").on("change", ".course-title", function() {
+    var id = getIdFromHtmlId($(this).attr("id"));
+    var course = user.getCourse(id);
+    course.setName($(this).val());
+    sendCurrentCourse(course);
+  });
+
+  $("#course_planner").on("change", ".course-credits", function() {
+    var id = getIdFromHtmlId($(this).attr("id"));
+    var course = user.getCourse(id);
+    course.setCredits($(this).val());
+    sendCurrentCourse(course);
+  });
+
+  $("#course_planner").on("change", ".anticipated-grade", function() {
+    var id = getIdFromHtmlId($(this).attr("id"));
+    var course = user.getCourse(id);
+    course.setAnticipatedGrade($(this).val());
+    sendCurrentCourse(course);
+  });
+
+  $("#course_planner").on("change", ".actual-grade", function() {
+    var id = getIdFromHtmlId($(this).attr("id"));
+    var course = user.getCourse(id);
+    course.setActualGrade($(this).val());
+    sendCurrentCourse(course);
+  });
+  /**
+  * When the user clicks on the add course button
+  * Send a request to the server to create a new course
+  * And add that created course into user and onto the page
+  **/
   $("#add_course").click(function() {
     $.ajax({
       url: "/academic_manager/create_course/",
@@ -218,12 +295,18 @@ $(document).ready(function() {
         addCourse(obj.id, obj.name, obj.credits, obj.semester);
       },
 
-      failure: function(result) {
+      error: function(result) {
         console.log("create_course request failed");
       },
     });
   });
 
+  /**
+  * When the user clicks on this button
+  * Requests a new major from the server
+  * adds the new major to the user
+  * and displays the new major on the page
+  **/
   $("#add_major").click(function() {
     $.ajax({
       url: "/academic_manager/create_major/",
@@ -236,7 +319,7 @@ $(document).ready(function() {
         addMajor(obj.id, obj.name, obj.creditsNeeded);
       },
       
-      failure: function(result) {
+      error: function(result) {
         console.log("create_major request failed");
       },
     });
