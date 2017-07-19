@@ -4,17 +4,6 @@ from datetime import datetime
 
 db = SQLAlchemy(app)
 
-
-user_major = db.Table('user_major',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('major_id', db.Integer, db.ForeignKey('major.id'))
-)
-
-course_major = db.Table('course_major',
-    db.Column('course_id', db.Integer, db.ForeignKey('course.id')),
-    db.Column('major_id', db.Integer, db.ForeignKey('major.id'))
-)
-
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)

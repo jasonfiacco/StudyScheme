@@ -2,9 +2,9 @@ from StudyScheme import app
 from flask import Flask, request, session, jsonify, g, redirect, url_for, abort, \
     render_template, flash
 import os
-from .models import User, db
+from .models import User, Major, Course, db
 from .forms import *
-from flask_login import LoginManager, login_user, logout_user, current_user
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 
 db.init_app(app)
 login_manager = LoginManager()
@@ -21,6 +21,7 @@ def index():
 def user_loader(user_id):
     """Given user_id, return the associated User object."""
     return User.query.get(int(user_id))
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -53,23 +54,27 @@ def login():
     return render_template('login.html', form=form)
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect("index")
 
 @app.route('/editor', methods=['GET'])
+@login_required
 def editor():
     return render_template('editor.html')
 
 @app.route('/academic_manager', methods=['GET'])
+@login_required
 def academic_manager():
     if request.method == 'GET':
-        return jsonify({'id': current_user.id, 'credits_needed': current_user.credits_needed, 'majors': [jsonify_major(major) for major in current_user.majors], 'courses': [course for course in current_user.courses] })
+        return jsonify({'id': current_user.id, 'credits_needed': current_user.total_credits_needed, 'majors': [jsonify_major(major) for major in current_user.majors], 'courses': [jsonify_course(course) for course in current_user.courses] })
 
 @app.route('/academic_manager/create_major', methods=['POST'])
+@login_required
 def create_major():
-    if not request.json:
-        abort(400)
+    #if not request.json:
+     #   abort(400)
 
     new_major = Major(' ', 0, current_user.id)
     db.session.add(new_major)
@@ -77,6 +82,7 @@ def create_major():
     return jsonify( {'major': jsonify_major(new_major)} ), 201
 
 @app.route('/academic_manager/update_majors', methods=['PUT'])
+@login_required
 def update_majors():
      for updated_major in request.json['majors']:
          major = current_user.majors[updated_major['id']]
@@ -93,15 +99,17 @@ def jsonify_major(major):
 
 #Course controllers
 @app.route('/academic_manager/create_course', methods=['POST'])
+@login_required
 def create_course():
     if not request.json:
         abort(400)
-    new_course = Course(' ', 1, -1, -1)
+    new_course = Course(' ', 1, -1, -1, current_user.id)
     db.session.add(new_course)
     db.commit()
     return jsonify( {'course': jsonify_course(new_course)} ), 201
 
 @app.route('/academic_manager/update_courses', methods=['PUT'])
+@login_required
 def update_courses():
      for updated_course in request.json['courses']:
          course = current_user.courses[updated_course['id']]
