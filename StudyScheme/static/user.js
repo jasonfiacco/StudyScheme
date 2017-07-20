@@ -112,6 +112,10 @@ class User {
     return Object.keys(this.courses);
   }
 
+  getCourses() {
+    return this.courses;
+  }
+
   setCreditsNeeded(credits) {
     this.creditsNeeded = parseInt(credits);
   }
