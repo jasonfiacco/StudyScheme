@@ -208,6 +208,17 @@ $(window).on("load", function(){
 function sendCurrentMajor(major) {
   //TODO: ajax to send JSON of user
   console.log("sending major " + major.getID());
+  $.ajax({
+    url: "/academic_manager/create_course",
+    contentType: "application/json",
+    type: "PUT",
+    dataType: "application/json",
+    data: JSON.stringify(major),
+
+    statusCode: {
+
+    }
+  });
   return;
 }
 
@@ -280,6 +291,7 @@ $(document).ready(function() {
   * And add that created course into user and onto the page
   **/
   $("#add_course").click(function() {
+    console.log($("#course_planner_semester").val());
     $.ajax({
       url: "/academic_manager/create_course",
       contentType: "application/json",
@@ -287,7 +299,7 @@ $(document).ready(function() {
       dataType: "application/json",
 
       data: JSON.stringify({
-        "semester" : $("#course_planner_semester").val(),
+        "semester" : $("#course_planner_semester > select").val(),
       }),
 
       statusCode: {
