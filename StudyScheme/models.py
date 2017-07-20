@@ -4,8 +4,8 @@ from datetime import datetime
 
 db = SQLAlchemy(app)
 
-major_course = db.Table('major_course'),
-    db.Column('major_id', Integer, ForeignKey('major.id'))
+major_course = db.Table('major_course',
+    db.Column('major_id', Integer, ForeignKey('major.id')),
     db.Colummn('course_id', Integer, ForeignKey('course.id'))
 
 class User(db.Model):
