@@ -86,10 +86,21 @@ def create_major():
 @login_required
 def update_majors():
      for updated_major in request.json['majors']:
-         major = current_user.majors[updated_major['id']]
+         major = Major.query.get(int(updated_major['id']))
          major.name = updated_major['name']
          major.credits_needed = updated_major['credits_needed']
+         db.session.commit()
      return jsonify({'majors': [jsonify_major(major) for major in current_user.majors]}), 200
+
+@app.route('/academic_manager/delete_major', methods=['DELETE'])
+@login_required
+def create_major():
+    if not request.json:
+        abort(400)
+    major = Major.query.get(int(request.json['id']))
+    db.session.delete(major)
+    db.session.commit()
+    return jsonify({'majors': [jsonify_major(major) for major in current_user.majors]}), 202
 
 def jsonify_major(major):
     new_major = {}
@@ -102,7 +113,6 @@ def jsonify_major(major):
 @app.route('/academic_manager/create_course', methods=['POST'])
 @login_required
 def create_course():
-    print(request.json)
     if not request.json['semester']:
         abort(400)
     new_course = Course(' ', 1, request.json['semester'], -1, -1, current_user.id)
@@ -114,12 +124,22 @@ def create_course():
 @login_required
 def update_courses():
      for updated_course in request.json['courses']:
-         course = current_user.courses[updated_course['id']]
+         course = Course.query.get(int(updated_course['id']))
          course.name = updated_course['name']
          course.credits = updated_course['credits']
          course.anticipated_grade = updated_course['anticipated_grade']
          course.actual_grade = updated_course['actual_grade']
      return jsonify({'courses': [jsonify_course(course) for course in current_user.courses]}), 200
+
+@app.route('/academic_manager/delete_course', methods=['DELETE'])
+@login_required
+def delete_course():
+    if not request.json['semester']:
+        abort(400)
+    course = Course.query.get(int(request.json['id']))
+    db.session.delete(course)
+    db.session.commit()
+    return jsonify( {'course': jsonify_course(new_course)} ), 201
 
 def jsonify_course(course):
     new_course = {}
@@ -129,3 +149,10 @@ def jsonify_course(course):
     new_course['anticipated_grade'] = course.anticipated_grade
     new_course['actual_grade'] = course.actual_grade
     return new_course
+
+@app.route('/academic_manager/update_user', methods=['PUT'])
+@login_required
+def updated_user():
+    current_user.total_credits_needed = int(request.json['creditsNeeded'])
+    db.session.commit()
+    return jsonify({'id': current_user.id} ), 200
