@@ -29,7 +29,7 @@ class User {
   }
 
   creditsRemaining() {
-    return Math.max(creditsNeeded - this.creditsTaken(), 0)
+    return Math.max(this.creditsNeeded - this.creditsTaken(), 0)
   }
 
   addMajor(major) {
@@ -87,6 +87,14 @@ class User {
     return this.majors;
   }
 
+  getMajorsList() {
+    var majors = [];
+    for (var majorID in this.majors) {
+      majors.push(this.majors[majorID]);
+    }
+    return majors;
+  }
+
   getMajor(id) {
     return this.majors[id];
   }
@@ -114,6 +122,14 @@ class User {
 
   getCourses() {
     return this.courses;
+  }
+
+  getCoursesList() {
+    var courses = [];
+    for (var coursesID in this.courses) {
+      courses.push(this.courses[coursesID]);
+    }
+    return courses;    
   }
 
   setCreditsNeeded(credits) {

@@ -28,7 +28,6 @@ function getGPA(score) {
   return Math.min(score / 3.0, 4.0);
 }
 
-
 /**
 * Renders the major, then adds it to the dictionary
 * @param id[int], major[string], creditsNeeded[double]
@@ -212,10 +211,10 @@ function sendCurrentMajors() {
     contentType: "application/json",
     type: "PUT",
     dataType: "application/json",
-    data: JSON.stringify({"majors" : user.getMajors()}),
+    data: JSON.stringify({"majors" : user.getMajorsList()}),
 
     success: function(response) {
-
+      console.log("sucessfully updated majors");
     },
 
     error: function(response) {
@@ -232,17 +231,24 @@ function sendCurrentCourses() {
     contentType: "application/json",
     type: "PUT",
     dataType: "application/json",
-    data: JSON.stringify({"courses" : user.getCourses()}),
+    data: JSON.stringify({"courses" : user.getCoursesList()}),
 
     success: function(response) {
-
+      console.log("sucessfully updated courses");
     },
 
     error: function(response) {
-      console.log("error updating coures");
+      console.log("error updating courses");
     }
   });
   return;
+}
+
+/**
+* Refreshes the number of credits remaining in the interface
+**/
+function refreshCreditsRemaining() {
+  $("#credits_remaining").html(user.creditsRemaining());
 }
 
 $(document).ready(function() {
@@ -354,5 +360,15 @@ $(document).ready(function() {
         }
       },
     });
+  });
+
+  /**
+  * When the user changes the credits needed
+  * Updates the credits needed with server and Credits remaining
+  **/
+  $("#credits_needed").change(function() {
+    user.setCreditsNeeded($("#credits_needed").val());
+    
+
   });
 });

@@ -53,7 +53,7 @@ class Course {
   }
 
   setCredits(credits) {
-    this.credits = credits;
+    this.credits = parseInt(credits);
   }
 
   setName(name) {
