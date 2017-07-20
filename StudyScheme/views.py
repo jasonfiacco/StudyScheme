@@ -126,3 +126,4 @@ def jsonify_course(course):
     new_course['credit'] = course.credit
     new_course['anticipated_grade'] = course.anticipated_grade
     new_course['actual_grade'] = course.actual_grade
+    return new_course
