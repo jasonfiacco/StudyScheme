@@ -295,11 +295,26 @@ function refreshCoursePlannerFull() {
 }
 
 /**
+* Refreshes all majors on the page
+**/
+function refreshMajors() {
+  $("#intended_majors").remove(".major");
+  var majors = user.getMajors();
+  for (var majorID in majors) {
+    var major = user.getMajor(majorID);
+    if (major) {
+      renderMajor(major);
+    }
+  }
+}
+
+/**
 * Completely refreshes the interface by removing all entries
 * then repopulates from data in user
 **/
 function refreshInterfaceFull() {
   refreshCoursePlannerFull();
+  refreshMajors();
   refreshInterfaceFast();
 }
 
@@ -317,6 +332,7 @@ $(document).ready(function() {
       200: function(result) {
         var obj = $.parseJSON(result.responseText);
         user = User.loadUserFromJSON(obj);
+        refreshInterfaceFull();
         userLoadedHandler();
       }
     },
