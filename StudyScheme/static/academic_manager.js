@@ -179,6 +179,12 @@ function renderCourse(course) {
 
   return true;
 }
+
+/**
+* Gets the ID from the HTML ID assuming naming conventions are met
+* @param HtmlId[String]
+* @return String that represents the id 
+**/
 function getIdFromHtmlId(HtmlId) {
   return HtmlId.split("-")[1];
 }
@@ -205,8 +211,10 @@ $(window).on("load", function(){
   $("#highest_GPA_semester").append(createSemesterSelector());
 });
 
+/**
+* Sends a list of current Majors in JSON form
+**/
 function sendCurrentMajors() {
-  //TODO: ajax to send JSON of user
   $.ajax({
     url: "/academic_manager/update_majors",
     contentType: "application/json",
@@ -215,18 +223,22 @@ function sendCurrentMajors() {
     data: JSON.stringify({"majors" : user.getMajorsList()}),
 
     success: function(response) {
+      //TODO: action on success
       console.log("sucessfully updated majors");
     },
 
     error: function(response) {
+      //TODO: action on failure
       console.log("error updating majors");
     }
   });
   return;
 }
 
+/**
+* Sends a list of current courses in JSON form
+**/
 function sendCurrentCourses() {
-  //TODO: ajax to send JSON of user
   $.ajax({
     url: "/academic_manager/update_courses",
     contentType: "application/json",
@@ -234,11 +246,13 @@ function sendCurrentCourses() {
     dataType: "application/json",
     data: JSON.stringify({"courses" : user.getCoursesList()}),
 
-    success: function(response) {
+    success: function(response) { 
+      //TODO: action on success
       console.log("sucessfully updated courses");
     },
 
     error: function(response) {
+      //TODO: action on failure
       console.log("error updating courses");
     }
   });
@@ -296,8 +310,21 @@ function refreshInterfaceFast() {
   refreshHighestGPA();
 }
 
+/**
+* Completely refreshes the interface by removing all entries
+* then repopulates from data in user
+**/
+function refreshInterfaceFull() {
+  //TODO: Full interface refresh
+}
+
+
 $(document).ready(function() {
   console.log("page ready");
+
+
+  ////////////////////////////////////////////////////////
+  // Intended Major changes
 
   /**
   * When the user changes the credits needed for a major
@@ -328,6 +355,14 @@ $(document).ready(function() {
     sendCurrentMajors();
   });
 
+
+  ///////////////////////////////////////////////////////
+  // Course Changes
+
+  /**
+  * When course-title changes, make changes in user
+  * and then submit user to server
+  **/
   $("#course_planner").on("change", ".course-title", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
@@ -336,6 +371,10 @@ $(document).ready(function() {
     sendCurrentCourses();
   });
 
+  /**
+  * When course-credits changes, make changes in user
+  * refresh interfance, and submit user to server
+  **/
   $("#course_planner").on("change", ".course-credits", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
@@ -344,6 +383,10 @@ $(document).ready(function() {
     sendCurrentCourses();
   });
 
+  /**
+  * When anticipated-grade changes, make changes in user
+  * refresh interface, and submit user to server
+  **/
   $("#course_planner").on("change", ".anticipated-grade", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
@@ -352,6 +395,10 @@ $(document).ready(function() {
     sendCurrentCourses();
   });
 
+  /**
+  * When actual-grade changes, make changes in user
+  * refresh interface, and submit user to server
+  **/
   $("#course_planner").on("change", ".actual-grade", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
@@ -359,6 +406,11 @@ $(document).ready(function() {
     refreshInterfaceFast();
     sendCurrentCourses();
   });
+
+
+  ///////////////////////////////////
+  // Adding new elements
+
   /**
   * When the user clicks on the add course button
   * Send a request to the server to create a new course
