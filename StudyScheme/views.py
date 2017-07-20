@@ -127,6 +127,7 @@ def update_courses():
          course = Course.query.get(int(updated_course['id']))
          course.name = updated_course['name']
          course.credits = updated_course['credits']
+         course.semester = updated_course['semester']
          course.anticipated_grade = updated_course['anticipated_grade']
          course.actual_grade = updated_course['actual_grade']
      return jsonify({'courses': [jsonify_course(course) for course in current_user.courses]}), 200
@@ -146,6 +147,7 @@ def jsonify_course(course):
     new_course['id'] = course.id
     new_course['name'] = course.name
     new_course['credits'] = course.credits
+    new_course['semester'] = course.semester
     new_course['anticipated_grade'] = course.anticipated_grade
     new_course['actual_grade'] = course.actual_grade
     return new_course
