@@ -208,11 +208,11 @@ $(window).on("load", function(){
 function sendCurrentMajors() {
   //TODO: ajax to send JSON of user
   $.ajax({
-    url: "/academic_manager/update_major",
+    url: "/academic_manager/update_majors",
     contentType: "application/json",
     type: "PUT",
     dataType: "application/json",
-    data: JSON.stringify(user.getMajors()),
+    data: JSON.stringify({"majors" : user.getMajors()}),
 
     success: function(response) {
 
@@ -232,7 +232,7 @@ function sendCurrentCourses() {
     contentType: "application/json",
     type: "PUT",
     dataType: "application/json",
-    data: JSON.stringify(user.getCourses()),
+    data: JSON.stringify({"courses" : user.getCourses()}),
 
     success: function(response) {
 
