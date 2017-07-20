@@ -33,13 +33,13 @@ function getGPA(score) {
 * @param id[int], major[string], creditsNeeded[double]
 * @return boolean indicating success or failure
 **/
-function addMajor(id, name, creditsNeeded) {
+function addMajor(id, name, creditsNeeded, majors) {
   if (user.getMajor(id) ||  user.getMajorNameList().includes(name)) {
     console.log("Major " + id + " or " + name + " already exists");
     return false;
   }
 
-  var major = new Major(id, name, creditsNeeded);
+  var major = new Major(id, name, creditsNeeded, majors);
 
   if (renderMajor(major)) {
     user.addMajor(major);
@@ -102,13 +102,15 @@ function renderMajor(major) {
 * @param id[int], name[String], credits[double], semester[int]
 * @return boolean represeting success
 **/
-function addCourse(id, name, credits, semester) {
+function addCourse(id, name, credits, semester, 
+  actualGrade, anticipatedGrade, majors) {
   if (user.getCourse(id)) {
     console.log("Course " + id + " already exists");
     return false;
   }
 
-  var course = new Course(id, name, credits, semester);
+  var course = new Course(id, name, credits, semester, 
+    actualGrade, anticipatedGrade, majors);
 
   if (renderCourse(course)) {
     user.addCourse(course);
@@ -464,7 +466,8 @@ $(document).ready(function() {
           201 : function(result) {
             var obj = $.parseJSON(result.responseText);
             var course = obj.course;
-            addCourse(course.id, course.name, course.credits, course.semester);
+            addCourse(course.id, course.name, course.credits, course.semester, 
+              course.actual_grade, course.anticipated_grade, course.majors);
           }
         },
       });
@@ -491,7 +494,7 @@ $(document).ready(function() {
           201: function(result) {
             var obj = $.parseJSON(result.responseText);
             var major = obj.major;
-            addMajor(major.id, "", major.credits_needed);
+            addMajor(major.id, major.name, major.credits_needed, major.courses);
           }
         },
       });

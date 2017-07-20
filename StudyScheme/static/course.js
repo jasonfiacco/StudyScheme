@@ -1,10 +1,11 @@
 class Course {
-  constructor(id, name, credits, semester, actualGrade, anticipatedGrade) {
+  constructor(id, name, credits, semester, 
+    actualGrade, anticipatedGrade, majors) {
     this.id = id;
     this.name = name.trim();
     this.credits = credits;
     this.semester = semester;
-    this.majors = [];
+    this.majors = majors;
     this.actualGrade = actualGrade;
     this.anticipatedGrade = anticipatedGrade;
   }

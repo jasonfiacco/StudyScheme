@@ -1,9 +1,9 @@
 class Major {
-  constructor(id, name, creditsNeeded) {
+  constructor(id, name, creditsNeeded, courses) {
     this.id = id;
     this.name = name.trim();
     this.creditsNeeded = creditsNeeded;
-    this.courses = []
+    this.courses = courses;
   }
 
   //////////////////////////////////////
