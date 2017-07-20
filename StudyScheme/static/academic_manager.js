@@ -1,4 +1,4 @@
-var user = new User();
+var user;
 
 var MAX_SEMESTERS = 8;
 
@@ -179,6 +179,12 @@ function renderCourse(course) {
 
   return true;
 }
+
+/**
+* Gets the ID from the HTML ID assuming naming conventions are met
+* @param HtmlId[String]
+* @return String that represents the id 
+**/
 function getIdFromHtmlId(HtmlId) {
   return HtmlId.split("-")[1];
 }
@@ -203,47 +209,9 @@ $(window).on("load", function(){
   $("#course_planner_semester").append(createSemesterSelector());
   $("#anticipated_GPA_semester").append(createSemesterSelector());
   $("#highest_GPA_semester").append(createSemesterSelector());
+
+  user = new User();
 });
-
-function sendCurrentMajors() {
-  //TODO: ajax to send JSON of user
-  $.ajax({
-    url: "/academic_manager/update_majors",
-    contentType: "application/json",
-    type: "PUT",
-    dataType: "application/json",
-    data: JSON.stringify({"majors" : user.getMajorsList()}),
-
-    success: function(response) {
-      console.log("sucessfully updated majors");
-    },
-
-    error: function(response) {
-      console.log("error updating majors");
-    }
-  });
-  return;
-}
-
-function sendCurrentCourses() {
-  //TODO: ajax to send JSON of user
-  $.ajax({
-    url: "/academic_manager/update_courses",
-    contentType: "application/json",
-    type: "PUT",
-    dataType: "application/json",
-    data: JSON.stringify({"courses" : user.getCoursesList()}),
-
-    success: function(response) {
-      console.log("sucessfully updated courses");
-    },
-
-    error: function(response) {
-      console.log("error updating courses");
-    }
-  });
-  return;
-}
 
 /**
 * Refreshes the number of credits remaining in the interface
@@ -296,8 +264,21 @@ function refreshInterfaceFast() {
   refreshHighestGPA();
 }
 
+/**
+* Completely refreshes the interface by removing all entries
+* then repopulates from data in user
+**/
+function refreshInterfaceFull() {
+  //TODO: Full interface refresh
+}
+
+
 $(document).ready(function() {
   console.log("page ready");
+
+
+  ////////////////////////////////////////////////////////
+  // Intended Major changes
 
   /**
   * When the user changes the credits needed for a major
@@ -312,7 +293,7 @@ $(document).ready(function() {
     var target = "#creditsRemaining-" + id;
     $(target).html(major.creditsRemaining());
     refreshInterfaceFast();
-    sendCurrentMajors();
+    user.sendCurrentMajors();
   });
 
   /**
@@ -325,40 +306,65 @@ $(document).ready(function() {
     var major = user.getMajor(id);
     major.setName($(this).val());
     refreshInterfaceFast();
-    sendCurrentMajors();
+    user.sendCurrentMajors();
   });
 
+
+  ///////////////////////////////////////////////////////
+  // Course Changes
+
+  /**
+  * When course-title changes, make changes in user
+  * and then submit user to server
+  **/
   $("#course_planner").on("change", ".course-title", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
     course.setName($(this).val());
     refreshInterfaceFast();
-    sendCurrentCourses();
+    user.sendCurrentCourses();
   });
 
+  /**
+  * When course-credits changes, make changes in user
+  * refresh interfance, and submit user to server
+  **/
   $("#course_planner").on("change", ".course-credits", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
     course.setCredits($(this).val());
     refreshInterfaceFast();
-    sendCurrentCourses();
+    user.sendCurrentCourses();
   });
 
+  /**
+  * When anticipated-grade changes, make changes in user
+  * refresh interface, and submit user to server
+  **/
   $("#course_planner").on("change", ".anticipated-grade", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
     course.setAnticipatedGrade($(this).val());
     refreshInterfaceFast();
-    sendCurrentCourses();
+    user.sendCurrentCourses();
   });
 
+  /**
+  * When actual-grade changes, make changes in user
+  * refresh interface, and submit user to server
+  **/
   $("#course_planner").on("change", ".actual-grade", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
     course.setActualGrade($(this).val());
     refreshInterfaceFast();
-    sendCurrentCourses();
+    user.sendCurrentCourses();
   });
+
+
+  ///////////////////////////////////
+  // Adding new elements
+
   /**
   * When the user clicks on the add course button
   * Send a request to the server to create a new course

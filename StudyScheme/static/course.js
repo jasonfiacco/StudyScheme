@@ -9,6 +9,9 @@ class Course {
     this.anticipatedGrade = -1;
   }
 
+  //////////////////////////////////////
+  // Loaders
+
   /**
   * Determines if class is taken yet
   * @return boolean representing whether course has been taken yet
@@ -99,6 +102,7 @@ class Course {
       "actual_grade" : this.actualGrade,
       "anticipated_grade" : this.anticipatedGrade,
       "semester" : this.semester,
+      "credits" : this.credits,
       "majors" : this.getMajorIDList(),
     };
   }
