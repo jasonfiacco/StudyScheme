@@ -1,10 +1,57 @@
 class User {
   constructor(id, creditsNeeded) {
-    this.id = id;
-    this.creditsNeeded = creditsNeeded;
+    this.id = parseInt(id);
+    this.creditsNeeded = parseInt(creditsNeeded);
     this.courses = {};
     this.majors = {};
   }
+
+  //////////////////////////////
+  // Loaders
+
+  /**
+  * Loads a user from network and returns a user object
+  * @return User the user loaded
+  **/
+  static loadUserFromNetwork() {
+    var user;
+    $.ajax({
+      url: "/academic_manager",
+      contentType: "application/json",
+      type: "GET",
+      dataType: "application/json",
+
+      statusCode: {
+        200: function(result) {
+          var obj = $.parseJSON(result.responseText);
+          user = loadUserFromJSON(obj);
+        }
+      },
+    });
+    return user;
+  }
+
+  /**
+  * Loads a User from JSON
+  * @return User
+  **/
+  static loadUserFromJSON(json) {
+    var user = new User(json["id"], json["creditsNeeded"]);
+    var majors = json["majors"];
+    var courses = json["courses"];
+    for (var majorIndex in majors) {
+      var major = Major.loadMajorFromJSON(majors[majorIndex]);
+      user.addMajor(major)
+    }
+    for (var courseIndex in courses) {
+      var course = Course.loadCourseFromJSON(courses[courseIndex]);
+      user.addCourse(course);
+    }
+    return user;
+  }
+
+  /////////////////////////////////////////
+  // Calcuations
 
   /**
   * Calculates the number of credits taken, counting only completed classes
@@ -114,7 +161,7 @@ class User {
     //Check how many semesters remain
     var completedSemesters = this.getCompletedSemester();
     var semestersLeft = MAX_SEMESTERS - completedSemesters;
-    if (semesterLeft <= 0) {
+    if (semestersLeft <= 0) {
       return this.currentGPA();
     }
 
@@ -204,8 +251,56 @@ class User {
   setCreditsNeeded(credits) {
     this.creditsNeeded = parseInt(credits);
   }
-  /////////////////////////
 
+  ////////////////////////
+  // Networking Stuff
+
+  /**
+  * Sends a list of current Majors in JSON form
+  **/
+  sendCurrentMajors() {
+    $.ajax({
+      url: "/academic_manager/update_majors",
+      contentType: "application/json",
+      type: "PUT",
+      data: JSON.stringify({"majors" : this.getMajorsList()}),
+
+      success: function(response) {
+        //TODO: action on success
+        console.log("sucessfully updated majors");
+      },
+
+      error: function(response) {
+        //TODO: action on failure
+        console.log("error updating majors");
+      }
+    });
+  }
+
+  /**
+  * Sends a list of current courses in JSON form
+  **/
+  sendCurrentCourses() {
+    $.ajax({
+      url: "/academic_manager/update_courses",
+      contentType: "application/json",
+      type: "PUT",
+      data: JSON.stringify({"courses" : this.getCoursesList()}),
+
+      success: function(response) { 
+        //TODO: action on success
+        console.log("sucessfully updated courses");
+      },
+
+      error: function(response) {
+        //TODO: action on failure
+        console.log("error updating courses");
+      }
+    });
+  }
+
+
+  /////////////////////////
   //JSON stuff
   toJSON() {
     return {
@@ -213,6 +308,6 @@ class User {
       "creditsNeeded" : this.creditsNeeded,
       "courses" : this.getCoursesList(),
       "majors" : this.getMajorsList()
-    }
+    };
   }
 }

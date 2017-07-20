@@ -1,4 +1,4 @@
-var user = new User();
+var user;
 
 var MAX_SEMESTERS = 8;
 
@@ -209,55 +209,9 @@ $(window).on("load", function(){
   $("#course_planner_semester").append(createSemesterSelector());
   $("#anticipated_GPA_semester").append(createSemesterSelector());
   $("#highest_GPA_semester").append(createSemesterSelector());
+
+  user = new User();
 });
-
-/**
-* Sends a list of current Majors in JSON form
-**/
-function sendCurrentMajors() {
-  $.ajax({
-    url: "/academic_manager/update_majors",
-    contentType: "application/json",
-    type: "PUT",
-    dataType: "application/json",
-    data: JSON.stringify({"majors" : user.getMajorsList()}),
-
-    success: function(response) {
-      //TODO: action on success
-      console.log("sucessfully updated majors");
-    },
-
-    error: function(response) {
-      //TODO: action on failure
-      console.log("error updating majors");
-    }
-  });
-  return;
-}
-
-/**
-* Sends a list of current courses in JSON form
-**/
-function sendCurrentCourses() {
-  $.ajax({
-    url: "/academic_manager/update_courses",
-    contentType: "application/json",
-    type: "PUT",
-    dataType: "application/json",
-    data: JSON.stringify({"courses" : user.getCoursesList()}),
-
-    success: function(response) { 
-      //TODO: action on success
-      console.log("sucessfully updated courses");
-    },
-
-    error: function(response) {
-      //TODO: action on failure
-      console.log("error updating courses");
-    }
-  });
-  return;
-}
 
 /**
 * Refreshes the number of credits remaining in the interface
@@ -339,7 +293,7 @@ $(document).ready(function() {
     var target = "#creditsRemaining-" + id;
     $(target).html(major.creditsRemaining());
     refreshInterfaceFast();
-    sendCurrentMajors();
+    user.sendCurrentMajors();
   });
 
   /**
@@ -352,7 +306,7 @@ $(document).ready(function() {
     var major = user.getMajor(id);
     major.setName($(this).val());
     refreshInterfaceFast();
-    sendCurrentMajors();
+    user.sendCurrentMajors();
   });
 
 
@@ -368,7 +322,7 @@ $(document).ready(function() {
     var course = user.getCourse(id);
     course.setName($(this).val());
     refreshInterfaceFast();
-    sendCurrentCourses();
+    user.sendCurrentCourses();
   });
 
   /**
@@ -380,7 +334,7 @@ $(document).ready(function() {
     var course = user.getCourse(id);
     course.setCredits($(this).val());
     refreshInterfaceFast();
-    sendCurrentCourses();
+    user.sendCurrentCourses();
   });
 
   /**
@@ -392,7 +346,7 @@ $(document).ready(function() {
     var course = user.getCourse(id);
     course.setAnticipatedGrade($(this).val());
     refreshInterfaceFast();
-    sendCurrentCourses();
+    user.sendCurrentCourses();
   });
 
   /**
@@ -404,7 +358,7 @@ $(document).ready(function() {
     var course = user.getCourse(id);
     course.setActualGrade($(this).val());
     refreshInterfaceFast();
-    sendCurrentCourses();
+    user.sendCurrentCourses();
   });
 
 

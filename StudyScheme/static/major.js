@@ -6,6 +6,13 @@ class Major {
     this.courses = []
   }
 
+  //////////////////////////////////////
+  // Loaders
+
+  static loadMajorFromJSON(json) {
+    
+  }
+
   creditsTaken() {
     var credits = 0;
     for (var course in this.courses) {
