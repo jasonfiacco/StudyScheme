@@ -136,4 +136,4 @@ def jsonify_course(course):
 def updated_user():
     current_user.total_credits_needed = int(request.json['creditsNeeded'])
     db.session.commit()
-    return jsonify({'id': current_user.id} )
+    return jsonify({'id': current_user.id} ), 200
