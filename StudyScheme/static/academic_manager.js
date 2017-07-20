@@ -507,6 +507,7 @@ $(document).ready(function() {
     $("#credits_needed").change(function() {
       user.setCreditsNeeded($("#credits_needed").val());
       refreshInterfaceFast();
+      user.sendCurrentUser();
     });
   }
 });
