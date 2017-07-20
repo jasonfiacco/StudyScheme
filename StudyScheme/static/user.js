@@ -16,7 +16,7 @@ class User {
   * @return User
   **/
   static loadUserFromJSON(json) {
-    var user = new User(json["id"], json["creditsNeeded"]);
+    var user = new User(json["id"], json["credits_needed"]);
     var majors = json["majors"];
     var courses = json["courses"];
     for (var majorIndex in majors) {
@@ -279,6 +279,28 @@ class User {
         console.log("error updating courses");
       }
     });
+  }
+
+  /**
+  * Sends the Current User to the server
+  **/
+  sendCurrentUser() {
+    $.ajax({
+      url: "/academic_manager/update_user",
+      contentType: "application/json",
+      type: "PUT",
+      data: JSON.stringify(this),
+
+      success: function(response) { 
+        //TODO: action on success
+        console.log("sucessfully updated courses");
+      },
+
+      error: function(response) {
+        //TODO: action on failure
+        console.log("error updating courses");
+      }
+    });      
   }
 
 
