@@ -107,6 +107,10 @@ def jsonify_major(major):
     new_major['id'] = major.id
     new_major['name'] = major.name
     new_major['credits_needed'] = major.credits_needed
+    course_ids = []
+    for course in major.courses:
+        course_ids.append(course.id)
+    new_major['courses'] = course_ids
     return new_major
 
 #Course controllers
@@ -130,6 +134,9 @@ def update_courses():
          course.semester = updated_course['semester']
          course.anticipated_grade = updated_course['anticipated_grade']
          course.actual_grade = updated_course['actual_grade']
+         major = Major.user.get(updated_course['major'])
+         major.courses.append(course)
+         db.session.commit()
      return jsonify({'courses': [jsonify_course(course) for course in current_user.courses]}), 200
 
 @app.route('/academic_manager/delete_course', methods=['DELETE'])
@@ -150,6 +157,10 @@ def jsonify_course(course):
     new_course['semester'] = course.semester
     new_course['anticipated_grade'] = course.anticipated_grade
     new_course['actual_grade'] = course.actual_grade
+    major_ids = []
+    for major in course.majors:
+        major_ids.append(major.id)
+    new_course['majors'] = major_ids
     return new_course
 
 @app.route('/academic_manager/update_user', methods=['PUT'])

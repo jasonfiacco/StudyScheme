@@ -4,6 +4,10 @@ from datetime import datetime
 
 db = SQLAlchemy(app)
 
+major_course = db.Table('major_course'),
+    db.Column('major_id', Integer, ForeignKey('major.id'))
+    db.Colummn('course_id', Integer, ForeignKey('course.id'))
+
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -42,6 +46,9 @@ class Major(db.Model):
     name = db.Column(db.String(60))
     credits_needed = db.Column(db.Integer)
 
+    courses = db.relationship('Course', secondary=major_course, back_populates='majors')
+
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __init__(self, name, credits_needed, user_id):
@@ -58,6 +65,8 @@ class Course(db.Model):
     semester = db.Column(db.Integer)
     anticipated_grade = db.Column(db.Integer)
     actual_grade = db.Column(db.Integer)
+
+    majors = relationship('Major', secondary=major_course, back_populates="courses")
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
