@@ -136,6 +136,7 @@ def update_courses():
          course.actual_grade = updated_course['actual_grade']
          major = Major.user.get(updated_course['major'])
          major.courses.append(course)
+         db.session.commit()
      return jsonify({'courses': [jsonify_course(course) for course in current_user.courses]}), 200
 
 @app.route('/academic_manager/delete_course', methods=['DELETE'])
