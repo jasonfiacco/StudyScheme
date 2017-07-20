@@ -2,35 +2,15 @@ class User {
   constructor(id, creditsNeeded) {
     this.id = parseInt(id);
     this.creditsNeeded = parseInt(creditsNeeded);
+    if (this.creditsNeeded == NaN) {
+      this.creditsNeeded = 0;
+    }
     this.courses = {};
     this.majors = {};
   }
 
   //////////////////////////////
   // Loaders
-
-  /**
-  * Loads a user from network and returns a user object
-  * @return User the user loaded
-  **/
-  static loadUserFromNetwork() {
-    var user;
-    $.ajax({
-      url: "/academic_manager",
-      contentType: "application/json",
-      type: "GET",
-      dataType: "application/json",
-
-      statusCode: {
-        200: function(result) {
-          var obj = $.parseJSON(result.responseText);
-          user = loadUserFromJSON(obj);
-        }
-      },
-    });
-    return user;
-  }
-
   /**
   * Loads a User from JSON
   * @return User

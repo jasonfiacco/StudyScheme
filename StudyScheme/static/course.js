@@ -1,16 +1,21 @@
 class Course {
-  constructor(id, name, credits, semester) {
+  constructor(id, name, credits, semester, actualGrade, anticipatedGrade) {
     this.id = id;
-    this.name = name;
+    this.name = name.trim();
     this.credits = credits;
     this.semester = semester;
     this.majors = [];
-    this.actualGrade = -1;
-    this.anticipatedGrade = -1;
+    this.actualGrade = actualGrade;
+    this.anticipatedGrade = anticipatedGrade;
   }
 
   //////////////////////////////////////
   // Loaders
+  static loadCourseFromJSON(json) {
+    return new Course(json["id"], json["name"], 
+      json["credits"], json["semester"],
+      json["actual_grade"], json["anticipated_grade"]);
+  }
 
   /**
   * Determines if class is taken yet
@@ -64,7 +69,7 @@ class Course {
   }
 
   setName(name) {
-    this.name = name;
+    this.name = name.trim();
   }
 
   /**

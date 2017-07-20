@@ -1,16 +1,15 @@
 class Major {
   constructor(id, name, creditsNeeded) {
     this.id = id;
-    this.name = name;
+    this.name = name.trim();
     this.creditsNeeded = creditsNeeded;
     this.courses = []
   }
 
   //////////////////////////////////////
   // Loaders
-
   static loadMajorFromJSON(json) {
-    
+    return new Major(json["id"], json["name"], json["credits_needed"]);
   }
 
   creditsTaken() {
@@ -56,7 +55,7 @@ class Major {
   }
 
   setName(name) {
-    this.name = name;
+    this.name = name.trim();
   }
   ////////////////////////
 

@@ -56,6 +56,7 @@ function addMajor(id, name, creditsNeeded) {
 function renderMajor(major) {
   var row = document.createElement("tr");
   row.id = "major-" + major.getID();
+  row.className += "major";
 
   var majorData = document.createElement("td");
   var majorEntry = document.createElement("input");
@@ -124,6 +125,7 @@ function addCourse(id, name, credits, semester) {
 function renderCourse(course) {
   var row = document.createElement("tr");
   row.id = "course-" + course.getID();
+  row.className += "course";
 
   var courseTitleData = document.createElement("td");
   var courseTitleInput = document.createElement("input");
@@ -253,6 +255,10 @@ function refreshHighestGPA() {
   $("#highest_gpa").html(user.highestGPA(maxSemester).toFixed(2));
 }
 
+function refreshCreditsNeeded() {
+  $("#credits_needed").val(user.getCreditsNeeded());
+}
+
 /**
 * Fast refreshes the interface
 **/
@@ -262,6 +268,30 @@ function refreshInterfaceFast() {
   refreshActualGPA();
   refreshAnticipatedGPA();
   refreshHighestGPA();
+  refreshCreditsNeeded();
+}
+
+/**
+* Clears the course planner and then puts the current semester courses
+**/
+function refreshCoursePlanner(semester) {
+  //remove all children
+  $("#course_planner").remove(".course")
+  var courses = user.getCourses();
+  for (var courseID in courses) {
+    var course = user.getCourse(courseID);
+    if (course && course.getSemester() == semester) {
+      renderCourse(course);
+    }
+  }
+}
+
+/**
+* Refreshes the course planner fully
+**/
+function refreshCoursePlannerFull() {
+  var currentSemester = $("#course_planner_semester > option").val();
+  refreshCoursePlanner(currentSemester);
 }
 
 /**
@@ -269,162 +299,182 @@ function refreshInterfaceFast() {
 * then repopulates from data in user
 **/
 function refreshInterfaceFull() {
-  //TODO: Full interface refresh
+  refreshCoursePlannerFull();
+  refreshInterfaceFast();
 }
 
-
 $(document).ready(function() {
-  console.log("page ready");
-
-
-  ////////////////////////////////////////////////////////
-  // Intended Major changes
-
   /**
-  * When the user changes the credits needed for a major
-  * Updates the major in user
-  * and updates the credits remaining display for the major
-  * Finally sends the updated major to the server
+  * Loads a user from network and returns a user object
   **/
-  $("#intended_majors").on("change", ".creditsNeeded", function() {
-    var id = getIdFromHtmlId($(this).attr("id"));
-    var major = user.getMajor(id);
-    major.setCreditsNeeded($(this).val());
-    var target = "#creditsRemaining-" + id;
-    $(target).html(major.creditsRemaining());
-    refreshInterfaceFast();
-    user.sendCurrentMajors();
+  $.ajax({
+    url: "/academic_manager",
+    contentType: "application/json",
+    type: "GET",
+    dataType: "application/json",
+
+    statusCode: {
+      200: function(result) {
+        var obj = $.parseJSON(result.responseText);
+        user = User.loadUserFromJSON(obj);
+        userLoadedHandler();
+      }
+    },
   });
 
-  /**
-  * When the user changes the major name
-  * updates major in the user
-  * and sends the updated major to the server
-  **/
-  $("#intended_majors").on("change", ".majorName", function() {
-    var id = getIdFromHtmlId($(this).attr("id"));
-    var major = user.getMajor(id);
-    major.setName($(this).val());
-    refreshInterfaceFast();
-    user.sendCurrentMajors();
-  });
+  function userLoadedHandler() {  
+    console.log("page ready");
 
 
-  ///////////////////////////////////////////////////////
-  // Course Changes
+    ////////////////////////////////////////////////////////
+    // Intended Major changes
 
-  /**
-  * When course-title changes, make changes in user
-  * and then submit user to server
-  **/
-  $("#course_planner").on("change", ".course-title", function() {
-    var id = getIdFromHtmlId($(this).attr("id"));
-    var course = user.getCourse(id);
-    course.setName($(this).val());
-    refreshInterfaceFast();
-    user.sendCurrentCourses();
-  });
-
-  /**
-  * When course-credits changes, make changes in user
-  * refresh interfance, and submit user to server
-  **/
-  $("#course_planner").on("change", ".course-credits", function() {
-    var id = getIdFromHtmlId($(this).attr("id"));
-    var course = user.getCourse(id);
-    course.setCredits($(this).val());
-    refreshInterfaceFast();
-    user.sendCurrentCourses();
-  });
-
-  /**
-  * When anticipated-grade changes, make changes in user
-  * refresh interface, and submit user to server
-  **/
-  $("#course_planner").on("change", ".anticipated-grade", function() {
-    var id = getIdFromHtmlId($(this).attr("id"));
-    var course = user.getCourse(id);
-    course.setAnticipatedGrade($(this).val());
-    refreshInterfaceFast();
-    user.sendCurrentCourses();
-  });
-
-  /**
-  * When actual-grade changes, make changes in user
-  * refresh interface, and submit user to server
-  **/
-  $("#course_planner").on("change", ".actual-grade", function() {
-    var id = getIdFromHtmlId($(this).attr("id"));
-    var course = user.getCourse(id);
-    course.setActualGrade($(this).val());
-    refreshInterfaceFast();
-    user.sendCurrentCourses();
-  });
-
-
-  ///////////////////////////////////
-  // Adding new elements
-
-  /**
-  * When the user clicks on the add course button
-  * Send a request to the server to create a new course
-  * And add that created course into user and onto the page
-  **/
-  $("#add_course").click(function() {
-    console.log($("#course_planner_semester").val());
-    $.ajax({
-      url: "/academic_manager/create_course",
-      contentType: "application/json",
-      type: "POST",
-      dataType: "application/json",
-
-      data: JSON.stringify({
-        "semester" : $("#course_planner_semester > select").val(),
-      }),
-
-      statusCode: {
-        201 : function(result) {
-          var obj = $.parseJSON(result.responseText);
-          var course = obj.course;
-          addCourse(course.id, course.name, course.credits, course.semester);
-        }
-      },
+    /**
+    * When the user changes the credits needed for a major
+    * Updates the major in user
+    * and updates the credits remaining display for the major
+    * Finally sends the updated major to the server
+    **/
+    $("#intended_majors").on("change", ".creditsNeeded", function() {
+      var id = getIdFromHtmlId($(this).attr("id"));
+      var major = user.getMajor(id);
+      major.setCreditsNeeded($(this).val());
+      var target = "#creditsRemaining-" + id;
+      $(target).html(major.creditsRemaining());
+      refreshInterfaceFast();
+      user.sendCurrentMajors();
     });
-  });
 
-  /**
-  * When the user clicks on this button
-  * Requests a new major from the server
-  * adds the new major to the user
-  * and displays the new major on the page
-  **/
-  $("#add_major").click(function() {
-    if (user.getMajorNameList().includes("")) {
-      console.log("Blank major already exists");
-      return;
-    }
-    $.ajax({
-      url: "/academic_manager/create_major",
-      contentType: "application/json",
-      type: "POST",
-      dataType: "application/json",
-
-      statusCode: {
-        201: function(result) {
-          var obj = $.parseJSON(result.responseText);
-          var major = obj.major;
-          addMajor(major.id, "", major.credits_needed);
-        }
-      },
+    /**
+    * When the user changes the major name
+    * updates major in the user
+    * and sends the updated major to the server
+    **/
+    $("#intended_majors").on("change", ".majorName", function() {
+      var id = getIdFromHtmlId($(this).attr("id"));
+      var major = user.getMajor(id);
+      major.setName($(this).val());
+      refreshInterfaceFast();
+      user.sendCurrentMajors();
     });
-  });
 
-  /**
-  * When the user changes the credits needed
-  * Updates the credits needed with server and Credits remaining
-  **/
-  $("#credits_needed").change(function() {
-    user.setCreditsNeeded($("#credits_needed").val());
-    refreshInterfaceFast();
-  });
+
+    ///////////////////////////////////////////////////////
+    // Course Changes
+
+    /**
+    * When course-title changes, make changes in user
+    * and then submit user to server
+    **/
+    $("#course_planner").on("change", ".course-title", function() {
+      var id = getIdFromHtmlId($(this).attr("id"));
+      var course = user.getCourse(id);
+      course.setName($(this).val());
+      refreshInterfaceFast();
+      user.sendCurrentCourses();
+    });
+
+    /**
+    * When course-credits changes, make changes in user
+    * refresh interfance, and submit user to server
+    **/
+    $("#course_planner").on("change", ".course-credits", function() {
+      var id = getIdFromHtmlId($(this).attr("id"));
+      var course = user.getCourse(id);
+      course.setCredits($(this).val());
+      refreshInterfaceFast();
+      user.sendCurrentCourses();
+    });
+
+    /**
+    * When anticipated-grade changes, make changes in user
+    * refresh interface, and submit user to server
+    **/
+    $("#course_planner").on("change", ".anticipated-grade", function() {
+      var id = getIdFromHtmlId($(this).attr("id"));
+      var course = user.getCourse(id);
+      course.setAnticipatedGrade($(this).val());
+      refreshInterfaceFast();
+      user.sendCurrentCourses();
+    });
+
+    /**
+    * When actual-grade changes, make changes in user
+    * refresh interface, and submit user to server
+    **/
+    $("#course_planner").on("change", ".actual-grade", function() {
+      var id = getIdFromHtmlId($(this).attr("id"));
+      var course = user.getCourse(id);
+      course.setActualGrade($(this).val());
+      refreshInterfaceFast();
+      user.sendCurrentCourses();
+    });
+
+
+    ///////////////////////////////////
+    // Adding new elements
+
+    /**
+    * When the user clicks on the add course button
+    * Send a request to the server to create a new course
+    * And add that created course into user and onto the page
+    **/
+    $("#add_course").click(function() {
+      console.log($("#course_planner_semester").val());
+      $.ajax({
+        url: "/academic_manager/create_course",
+        contentType: "application/json",
+        type: "POST",
+        dataType: "application/json",
+
+        data: JSON.stringify({
+          "semester" : $("#course_planner_semester > select").val(),
+        }),
+
+        statusCode: {
+          201 : function(result) {
+            var obj = $.parseJSON(result.responseText);
+            var course = obj.course;
+            addCourse(course.id, course.name, course.credits, course.semester);
+          }
+        },
+      });
+    });
+
+    /**
+    * When the user clicks on this button
+    * Requests a new major from the server
+    * adds the new major to the user
+    * and displays the new major on the page
+    **/
+    $("#add_major").click(function() {
+      if (user.getMajorNameList().includes("")) {
+        console.log("Blank major already exists");
+        return;
+      }
+      $.ajax({
+        url: "/academic_manager/create_major",
+        contentType: "application/json",
+        type: "POST",
+        dataType: "application/json",
+
+        statusCode: {
+          201: function(result) {
+            var obj = $.parseJSON(result.responseText);
+            var major = obj.major;
+            addMajor(major.id, "", major.credits_needed);
+          }
+        },
+      });
+    });
+
+    /**
+    * When the user changes the credits needed
+    * Updates the credits needed with server and Credits remaining
+    **/
+    $("#credits_needed").change(function() {
+      user.setCreditsNeeded($("#credits_needed").val());
+      refreshInterfaceFast();
+    });
+  }
 });
