@@ -130,3 +130,9 @@ def jsonify_course(course):
     new_course['anticipated_grade'] = course.anticipated_grade
     new_course['actual_grade'] = course.actual_grade
     return new_course
+
+@app.route('/academic_manager/update_user', methods=['PUT'])
+@login_required
+def updated_user():
+    current_user.total_credits_needed = int(request.json['creditsNeeded'])
+    return jsonify({'id': current_user.id} )
