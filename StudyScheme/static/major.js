@@ -67,7 +67,7 @@ class Major {
     return {
       "id" : this.id,
       "name" : this.name,
-      "creditsNeeded" : this.creditsNeeded,
+      "credits_needed" : this.creditsNeeded,
       "courses" : this.getCourseIDList(),
     };
   }

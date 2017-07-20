@@ -281,7 +281,7 @@ $(document).ready(function() {
   **/
   $("#add_course").click(function() {
     $.ajax({
-      url: "/academic_manager/create_course/",
+      url: "/academic_manager/create_course",
       contentType: "application/json",
       type: "POST",
       dataType: "application/json",
@@ -290,13 +290,12 @@ $(document).ready(function() {
         "semester" : $("#course_planner_semester").val(),
       }),
 
-      success: function(result) {
-        var obj = $.parseJSON(result);
-        addCourse(obj.id, obj.name, obj.credits, obj.semester);
-      },
-
-      error: function(result) {
-        console.log("create_course request failed");
+      statusCode: {
+        201 : function(result) {
+          var obj = $.parseJSON(result.responseText);
+          var course = obj.course;
+          addCourse(course.id, course.name, course.credits, course.semester);
+        }
       },
     });
   });
@@ -308,19 +307,22 @@ $(document).ready(function() {
   * and displays the new major on the page
   **/
   $("#add_major").click(function() {
+    if (user.getMajorNameList().includes("")) {
+      console.log("Blank major already exists");
+      return;
+    }
     $.ajax({
-      url: "/academic_manager/create_major/",
+      url: "/academic_manager/create_major",
       contentType: "application/json",
       type: "POST",
       dataType: "application/json",
 
-      success: function(result) {
-        var obj = $.parseJSON(result);
-        addMajor(obj.id, obj.name, obj.creditsNeeded);
-      },
-      
-      error: function(result) {
-        console.log("create_major request failed");
+      statusCode: {
+        201: function(result) {
+          var obj = $.parseJSON(result.responseText);
+          var major = obj.major;
+          addMajor(major.id, "", major.credits_needed);
+        }
       },
     });
   });
