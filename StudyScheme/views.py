@@ -88,7 +88,7 @@ def update_majors():
          major = current_user.majors[updated_major['id']]
          major.name = updated_major['name']
          major.credits_needed = updated_major['credits_needed']
-     return jsonify({'majors': [jsonify_major(major) for major in current_user.majors]})
+     return jsonify({'majors': [jsonify_major(major) for major in current_user.majors]}), 200
 
 def jsonify_major(major):
     new_major = {}
@@ -117,7 +117,7 @@ def update_courses():
          course.credits = updated_course['credits']
          course.anticipated_grade = updated_course['anticipated_grade']
          course.actual_grade = updated_course['actual_grade']
-     return jsonify({'courses': [jsonify_course(course) for course in current_user.courses]})
+     return jsonify({'courses': [jsonify_course(course) for course in current_user.courses]}), 200
 
 def jsonify_course(course):
     new_course = {}
