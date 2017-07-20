@@ -54,15 +54,17 @@ class Course(db.Model):
     __tablename__ = 'course'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60))
-    credit = db.Column(db.Integer)
+    credits = db.Column(db.Integer)
+    semester = db.Column(db.Integer)
     anticipated_grade = db.Column(db.Integer)
     actual_grade = db.Column(db.Integer)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, name, credit, anticipated_grade, actual_grade, user_id):
+    def __init__(self, name, credits, semester, anticipated_grade, actual_grade, user_id):
         self.name = name
-        self.credit = credit
+        self.credits = credits
+        self.semester = semester
         self.anticipated_grade = anticipated_grade
         self.actual_grade = actual_grade
         self.user_id = user_id
