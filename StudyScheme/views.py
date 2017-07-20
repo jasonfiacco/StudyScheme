@@ -34,7 +34,7 @@ def register():
             flash('User successfully registered')
             session['logged_in'] = True
             login_user(new_user, remember=True)
-            return redirect(url_for('academic_manager'))
+            return redirect(url_for('editor'))
         else:
             flash('User already exists')
     return render_template('register.html', form=form)
@@ -48,7 +48,7 @@ def login():
         if registered_user:
             session['logged_in'] = True
             login_user(registered_user, remember=True)
-            return redirect(url_for('academic_manager'))
+            return redirect(url_for('editor'))
         else:
             flash('Username or password is invalid')
     return render_template('login.html', form=form)
@@ -56,6 +56,7 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
+    session['logged_in'] = False
     logout_user()
     return redirect("index")
 
@@ -101,7 +102,8 @@ def jsonify_major(major):
 @app.route('/academic_manager/create_course', methods=['POST'])
 @login_required
 def create_course():
-    if not request.json:
+    print(request.json)
+    if not request.json['semester']:
         abort(400)
     new_course = Course(' ', 1, request.json['semester'], -1, -1, current_user.id)
     db.session.add(new_course)
