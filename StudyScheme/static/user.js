@@ -40,7 +40,7 @@ class User {
     this.courses[course.getID()] = course;
   }
 
-  currentGPA() {
+  currentGPA(maxSemester) {
     var weightedTotal = 0;
     for (var course in this.courses) {
       course = this.courses[course];
@@ -51,14 +51,14 @@ class User {
     return getGPA(weightedTotal / this.creditsTaken());
   }
 
-  anticipatedGPA() {
+  anticipatedGPA(maxSemester) {
     var weightedTotal = 0;
     for (var course in this.courses) {
       course = this.courses[course];
       if (course.completed()) {
         weightedTotal += course.getCredits() * course.getActualGrade();
       } 
-      else if (course.anticipated()) {
+      else if (course.anticipated() && course.getSemester() <= maxSemester) {
         weightedTotal += course.getCredits() * course.getAnticipatedGrade();
       }
     }
@@ -70,15 +70,32 @@ class User {
   * as many credits as needed
   * @return double of highest grade user can obtain
   **/
-  highestGPA() {
+  highestGPA(maxSemester) {
     var weightedTotal = 0;
     weightedTotal += this.currentGPA() * this.creditsTaken();
-    weightedTotal += 4.0 * this.creditsRemaining();
+    var semestersLeft = Math.max(maxSemester - this.getCompletedSemester(), 1);
+    weightedTotal += 4.0 * Math.max(this.creditsRemaining() / semestersLeft, 0);
     return getGPA(weightedTotal / this.creditsNeeded);
   }
 
   /////////////////////////
   // Getters and Setters
+  /**
+  * Gets the max of the semesters of the courses completed
+  **/
+  getCompletedSemester() {
+    var maxSemester = 0;
+    for (var courseID in this.courses) {
+      var course = this.courses[courseID];
+      if (course.completed()) {
+        if (course.getSemester() > maxSemester) {
+          maxSemester = course.getSemester();
+        }
+      }
+    }
+    return maxSemester;
+  }
+
   getCreditsNeeded() {
     return this.creditsNeeded;
   }
@@ -142,8 +159,8 @@ class User {
     return {
       "id" : this.id,
       "creditsNeeded" : this.creditsNeeded,
-      "courses" : this.courses,
-      "majors" : this.majors
+      "courses" : this.getCoursesList(),
+      "majors" : this.getMajorsList()
     }
   }
 }

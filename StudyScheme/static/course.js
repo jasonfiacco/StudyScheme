@@ -52,6 +52,10 @@ class Course {
     return this.name;
   }
 
+  getSemester() {
+    return this.semester;
+  }
+  
   setCredits(credits) {
     this.credits = parseInt(credits);
   }
