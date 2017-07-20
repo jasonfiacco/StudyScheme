@@ -103,7 +103,7 @@ def jsonify_major(major):
 def create_course():
     if not request.json:
         abort(400)
-    new_course = Course(' ', 1, -1, -1, current_user.id)
+    new_course = Course(' ', 1, request.json['semester'], -1, -1, current_user.id)
     db.session.add(new_course)
     db.session.commit()
     return jsonify( {'course': jsonify_course(new_course)} ), 201
@@ -114,7 +114,7 @@ def update_courses():
      for updated_course in request.json['courses']:
          course = current_user.courses[updated_course['id']]
          course.name = updated_course['name']
-         course.credit = updated_course['credit']
+         course.credits = updated_course['credits']
          course.anticipated_grade = updated_course['anticipated_grade']
          course.actual_grade = updated_course['actual_grade']
      return jsonify({'courses': [jsonify_course(course) for course in current_user.courses]})
@@ -123,7 +123,7 @@ def jsonify_course(course):
     new_course = {}
     new_course['id'] = course.id
     new_course['name'] = course.name
-    new_course['credit'] = course.credit
+    new_course['credits'] = course.credits
     new_course['anticipated_grade'] = course.anticipated_grade
     new_course['actual_grade'] = course.actual_grade
     return new_course
