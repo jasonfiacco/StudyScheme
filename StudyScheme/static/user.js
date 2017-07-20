@@ -6,6 +6,10 @@ class User {
     this.majors = {};
   }
 
+  /**
+  * Calculates the number of credits taken, counting only completed classes
+  * @return double that represents the number of credits taken
+  **/
   creditsTaken() {
     var credits = 0;
     for (var course in this.courses) {
@@ -17,30 +21,54 @@ class User {
     return credits;
   }
 
-  anticipatedCreditsTaken() {
+  /**
+  * Calculates the anticipated number of credits to be taken
+  * Where only classes that have an anticipated or acutal grade are counted
+  * @param maxSemester[int]
+  * @return double representing the number of credits taken
+  **/
+  anticipatedCreditsTaken(maxSemester) {
     var credits = 0;
     for (var course in this.courses) {
       course = this.courses[course];
-      if (course.completed() || course.anticipated()) {
+      if (course.completed() || 
+          (course.anticipated() && course.getSemester() <= maxSemester)) {
         credits += course.getCredits();
       }
     }
     return credits;
   }
 
+  /**
+  * Calculates the number of credits the user still needs to take
+  * returning 0 if the user has reached sufficient credits
+  * @return double representing how many credits still need to be taken
+  **/
   creditsRemaining() {
     return Math.max(this.creditsNeeded - this.creditsTaken(), 0)
   }
 
+  /**
+  * Adds a major to the major list
+  * @param major[Major] major to be added
+  **/
   addMajor(major) {
     this.majors[major.getID()] = major;
   }
 
+  /**
+  * Adds a course to the courselist
+  * @param course[Course] course to be added
+  **/
   addCourse(course) {
     this.courses[course.getID()] = course;
   }
 
-  currentGPA(maxSemester) {
+  /**
+  * Calculates the current GPA, weighted by how many credits the class is worth
+  * @return double that represents the GPA
+  **/
+  currentGPA() {
     var weightedTotal = 0;
     for (var course in this.courses) {
       course = this.courses[course];
@@ -51,6 +79,12 @@ class User {
     return getGPA(weightedTotal / this.creditsTaken());
   }
 
+  /**
+  * Determines the anticipated GPA by a certain semester
+  * Uses the completed grade if it exists, otherwise the anticipated grade
+  * @param maxSemester[int] 
+  * @return double that represents the anticipated GPA
+  **/
   anticipatedGPA(maxSemester) {
     var weightedTotal = 0;
     for (var course in this.courses) {
@@ -62,7 +96,7 @@ class User {
         weightedTotal += course.getCredits() * course.getAnticipatedGrade();
       }
     }
-    return getGPA(weightedTotal / this.anticipatedCreditsTaken());    
+    return getGPA(weightedTotal / this.anticipatedCreditsTaken(maxSemester));    
   }
 
   /**
@@ -72,16 +106,34 @@ class User {
   **/
   highestGPA(maxSemester) {
     var weightedTotal = 0;
-    weightedTotal += this.currentGPA() * this.creditsTaken();
-    var semestersLeft = Math.max(maxSemester - this.getCompletedSemester(), 1);
-    weightedTotal += 4.0 * Math.max(this.creditsRemaining() / semestersLeft, 0);
-    return getGPA(weightedTotal / this.creditsNeeded);
+
+    //get the current weighted total GPA
+    var creditsTaken = this.creditsTaken();
+    weightedTotal += this.currentGPA() * creditsTaken;
+
+    //Check how many semesters remain
+    var completedSemesters = this.getCompletedSemester();
+    var semestersLeft = MAX_SEMESTERS - completedSemesters;
+    if (semesterLeft <= 0) {
+      return this.currentGPA();
+    }
+
+    //Check how many more semesters we need to take
+    var semestersToTake = maxSemester - completedSemesters;
+    var creditsToTake = Math.max(this.creditsRemaining() * semestersToTake / semestersLeft, 0);
+    
+    //Add the higest weight possible and calculate GPA
+    weightedTotal += 4.0 * creditsToTake;
+    return getGPA(weightedTotal / (creditsToTake + creditsTaken));
   }
 
   /////////////////////////
   // Getters and Setters
+
   /**
   * Gets the max of the semesters of the courses completed
+  * We assume completed if user has completed a course in that semester
+  * @return integer representing the greatest completed semester
   **/
   getCompletedSemester() {
     var maxSemester = 0;
