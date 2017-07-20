@@ -86,9 +86,10 @@ def create_major():
 @login_required
 def update_majors():
      for updated_major in request.json['majors']:
-         major = current_user.majors[updated_major['id']]
+         major = Major.query.get(int(updated_major['id']))
          major.name = updated_major['name']
          major.credits_needed = updated_major['credits_needed']
+         db.session.commit()
      return jsonify({'majors': [jsonify_major(major) for major in current_user.majors]}), 200
 
 def jsonify_major(major):
@@ -114,7 +115,7 @@ def create_course():
 @login_required
 def update_courses():
      for updated_course in request.json['courses']:
-         course = current_user.courses[updated_course['id']]
+         course = Course.query.get(int(updated_course['id']))
          course.name = updated_course['name']
          course.credits = updated_course['credits']
          course.anticipated_grade = updated_course['anticipated_grade']
