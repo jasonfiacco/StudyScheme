@@ -205,26 +205,43 @@ $(window).on("load", function(){
   $("#highest_GPA_semester").append(createSemesterSelector());
 });
 
-function sendCurrentMajor(major) {
+function sendCurrentMajors() {
   //TODO: ajax to send JSON of user
-  console.log("sending major " + major.getID());
   $.ajax({
-    url: "/academic_manager/create_course",
+    url: "/academic_manager/update_major",
     contentType: "application/json",
     type: "PUT",
     dataType: "application/json",
-    data: JSON.stringify(major),
+    data: JSON.stringify(user.getMajors()),
 
-    statusCode: {
+    success: function(response) {
 
+    },
+
+    error: function(response) {
+      console.log("error updating majors");
     }
   });
   return;
 }
 
-function sendCurrentCourse(course) {
+function sendCurrentCourses() {
   //TODO: ajax to send JSON of user
-  console.log("sending course " + course.getID());
+  $.ajax({
+    url: "/academic_manager/update_courses",
+    contentType: "application/json",
+    type: "PUT",
+    dataType: "application/json",
+    data: JSON.stringify(user.getCourses()),
+
+    success: function(response) {
+
+    },
+
+    error: function(response) {
+      console.log("error updating coures");
+    }
+  });
   return;
 }
 
@@ -243,7 +260,7 @@ $(document).ready(function() {
     major.setCreditsNeeded($(this).val());
     var target = "#creditsRemaining-" + id;
     $(target).html(major.creditsRemaining())
-    sendCurrentMajor(major);
+    sendCurrentMajors();
   });
 
   /**
@@ -255,35 +272,35 @@ $(document).ready(function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var major = user.getMajor(id);
     major.setName($(this).val());
-    sendCurrentMajor(major);
+    sendCurrentMajors();
   });
 
   $("#course_planner").on("change", ".course-title", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
     course.setName($(this).val());
-    sendCurrentCourse(course);
+    sendCurrentCourses();
   });
 
   $("#course_planner").on("change", ".course-credits", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
     course.setCredits($(this).val());
-    sendCurrentCourse(course);
+    sendCurrentCourses();
   });
 
   $("#course_planner").on("change", ".anticipated-grade", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
     course.setAnticipatedGrade($(this).val());
-    sendCurrentCourse(course);
+    sendCurrentCourses();
   });
 
   $("#course_planner").on("change", ".actual-grade", function() {
     var id = getIdFromHtmlId($(this).attr("id"));
     var course = user.getCourse(id);
     course.setActualGrade($(this).val());
-    sendCurrentCourse(course);
+    sendCurrentCourses();
   });
   /**
   * When the user clicks on the add course button

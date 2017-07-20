@@ -92,8 +92,8 @@ class Course {
     return {
       "id" : this.id, 
       "name" : this.name,
-      "actualGrade" : this.actualGrade,
-      "anticipatedGrade" : this.anticipatedGrade,
+      "actual_grade" : this.actualGrade,
+      "anticipated_grade" : this.anticipatedGrade,
       "semester" : this.semester,
       "majors" : this.getMajorIDList(),
     };
