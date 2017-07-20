@@ -2,7 +2,7 @@ class User {
   constructor(id, creditsNeeded) {
     this.id = parseInt(id);
     this.creditsNeeded = parseInt(creditsNeeded);
-    if (this.creditsNeeded == NaN) {
+    if (isNaN(this.creditsNeeded)) {
       this.creditsNeeded = 0;
     }
     this.courses = {};
@@ -132,6 +132,9 @@ class User {
   * @return double of highest grade user can obtain
   **/
   highestGPA(maxSemester) {
+    if (this.getCompletedSemester >= maxSemester) {
+      return this.currentGPA();
+    }
     var weightedTotal = 0;
 
     //get the current weighted total GPA
@@ -148,7 +151,6 @@ class User {
     //Check how many more semesters we need to take
     var semestersToTake = maxSemester - completedSemesters;
     var creditsToTake = Math.max(this.creditsRemaining() * semestersToTake / semestersLeft, 0);
-    
     //Add the higest weight possible and calculate GPA
     weightedTotal += 4.0 * creditsToTake;
     return getGPA(weightedTotal / (creditsToTake + creditsTaken));

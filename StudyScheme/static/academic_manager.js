@@ -117,6 +117,8 @@ function addCourse(id, name, credits, semester) {
   return false;
 }
 
+
+
 /**
 * Renders the course presented onto course table
 * @param course[Course]
@@ -276,7 +278,7 @@ function refreshInterfaceFast() {
 **/
 function refreshCoursePlanner(semester) {
   //remove all children
-  $("#course_planner").remove(".course")
+  $("#course_planner > tbody").children(".course").remove();
   var courses = user.getCourses();
   for (var courseID in courses) {
     var course = user.getCourse(courseID);
@@ -290,7 +292,7 @@ function refreshCoursePlanner(semester) {
 * Refreshes the course planner fully
 **/
 function refreshCoursePlannerFull() {
-  var currentSemester = $("#course_planner_semester > option").val();
+  var currentSemester = $("#course_planner_semester > select").val();
   refreshCoursePlanner(currentSemester);
 }
 
@@ -298,7 +300,7 @@ function refreshCoursePlannerFull() {
 * Refreshes all majors on the page
 **/
 function refreshMajors() {
-  $("#intended_majors").remove(".major");
+  $("#intended_majors").children(".major").remove();
   var majors = user.getMajors();
   for (var majorID in majors) {
     var major = user.getMajor(majorID);
@@ -318,6 +320,14 @@ function refreshInterfaceFull() {
   refreshInterfaceFast();
 }
 
+/**
+* Runs only once when the page loads
+**/
+function onStartLoad() {
+  $("#course_planner_semester > select").val(Math.max(user.getCompletedSemester(), 1));
+  refreshInterfaceFull();
+}
+
 $(document).ready(function() {
   /**
   * Loads a user from network and returns a user object
@@ -332,7 +342,7 @@ $(document).ready(function() {
       200: function(result) {
         var obj = $.parseJSON(result.responseText);
         user = User.loadUserFromJSON(obj);
-        refreshInterfaceFull();
+        onStartLoad();
         userLoadedHandler();
       }
     },
@@ -426,6 +436,9 @@ $(document).ready(function() {
       user.sendCurrentCourses();
     });
 
+    $("#course_planner_semester > select").change(function() {
+      refreshCoursePlannerFull();
+    });
 
     ///////////////////////////////////
     // Adding new elements
