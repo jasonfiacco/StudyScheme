@@ -94,7 +94,7 @@ def update_majors():
 
 @app.route('/academic_manager/delete_major', methods=['DELETE'])
 @login_required
-def create_major():
+def delete_major():
     if not request.json:
         abort(400)
     major = Major.query.get(int(request.json['id']))
