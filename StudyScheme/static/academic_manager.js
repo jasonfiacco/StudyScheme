@@ -509,5 +509,14 @@ $(document).ready(function() {
       refreshInterfaceFast();
       user.sendCurrentUser();
     });
+
+    /////////////////////////
+    // GPA Manager Events
+
+    $("#anticipated_GPA_semester > select").change(
+      refreshInterfaceFast);
+
+    $("#highest_GPA_semester > select").change(
+      refreshInterfaceFast);
   }
 });
