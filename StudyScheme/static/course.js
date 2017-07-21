@@ -5,7 +5,11 @@ class Course {
     this.name = name.trim();
     this.credits = credits;
     this.semester = semester;
-    this.majors = majors;
+    this.majors = {};
+    for (var major in majors) {
+      var majorID = majors[major];
+      this.majors[majorID] = user.getMajor(majorID);
+    }
     this.actualGrade = actualGrade;
     this.anticipatedGrade = anticipatedGrade;
   }
@@ -32,6 +36,10 @@ class Course {
   **/
   anticipated() {
     return this.anticipatedGrade != -1;
+  }
+
+  addMajor(major) {
+    this.majors[major.getID()] = major;
   }
 
   /////////////////
@@ -65,6 +73,10 @@ class Course {
     return this.semester;
   }
   
+  getMajors() {
+    return this.majors;
+  }
+
   setCredits(credits) {
     this.credits = parseInt(credits);
   }

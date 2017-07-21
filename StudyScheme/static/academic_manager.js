@@ -118,6 +118,47 @@ function renderMajor(major) {
 }
 
 /**
+* Creates a multiple select list
+* that has keys of options as values and 
+* values of options as the displayed text
+* vals are stored as the class name
+* @param options[dictionary]
+* @return DOM object
+**/
+function createMultipleSelect(options) {
+  var dropdown = document.createElement("div");
+  dropdown.className += "dropdown";
+
+  var button = document.createElement("button");
+  button.className = "btn btn-primary btn-dropdown";
+  button.type = "button";
+  $(button).attr("data-toggle", "dropdown");
+  button.innerHTML = "Select <span class='caret'></span>";
+
+  dropdown.appendChild(button);
+
+  var select = document.createElement("ul");
+  select.className += "dropdown-menu";
+
+  for (var optionKey in options) {
+    var item = document.createElement("li");
+    var innerItem = document.createElement("a");
+    innerItem.href = "#";
+    var text = options[optionKey];
+    if (!text.trim()) {
+      text = "<em>(no name)</em>"
+    }
+    innerItem.innerHTML = text;
+    item.className += optionKey;
+    item.appendChild(innerItem);
+    select.appendChild(item);
+  }
+  dropdown.appendChild(select);
+  
+  return dropdown;
+}
+
+/**
 * Creates a new course, renders it, and adds it to the current user
 * @param id[int], name[String], credits[double], semester[int]
 * @return boolean represeting success
@@ -165,8 +206,15 @@ function renderCourse(course) {
 
   var contributesToData = document.createElement("td");
   //TODO: implement contributesTo
-  contributesToData.innerHTML = "Not Yet Implemented";
-
+  var dropdown = createMultipleSelect(user.getMajorIDtoName());
+  dropdown.className += " contribute-majors";
+  dropdown.id = "contribute-" + course.getID();
+  $(dropdown).children("ul").children("li").each(function() {
+    if ($(this).attr("class") in course.getMajors()) {
+      $(this).addClass("select-toggled");
+    }
+  });
+  contributesToData.appendChild(dropdown);
 
   var createGradeDropdowns = function(val) {
     var select = document.createElement("select");
@@ -534,7 +582,6 @@ $(document).ready(function() {
 
     /////////////////////////
     // GPA Manager Events
-
     $("#anticipated_GPA_semester > select").change(
       refreshInterfaceFast);
 
@@ -557,6 +604,6 @@ $(document).ready(function() {
         user.removeMajor(id);
         refreshMajors();
       });
-    });      
+    });   
   }
 });

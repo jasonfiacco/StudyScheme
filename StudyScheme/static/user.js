@@ -219,6 +219,14 @@ class User {
     return majors;
   }
 
+  getMajorIDtoName() {
+    var majors = {};
+    for (var majorID in this.majors) {
+      majors[majorID] = this.majors[majorID].getName()
+    }
+    return majors;
+  }
+
   getMajor(id) {
     return this.majors[id];
   }

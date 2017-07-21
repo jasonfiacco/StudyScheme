@@ -5,3 +5,7 @@
 .add-button {
   padding-bottom: 15px;
 }
+
+.select-toggled {
+  background-color: #e8e8e8;
+}

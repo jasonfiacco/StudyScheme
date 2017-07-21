@@ -3,7 +3,11 @@ class Major {
     this.id = id;
     this.name = name.trim();
     this.creditsNeeded = creditsNeeded;
-    this.courses = courses;
+    this.courses = {};
+    for (var course in courses) {
+      var courseID = courses[course];
+      this.courses[courseID] = user.getCourse(courseID);
+    }
   }
 
   //////////////////////////////////////
@@ -36,6 +40,10 @@ class Major {
     return getGPA(weightedTotal / this.creditsTaken());
   }
 
+  addCourse(course) {
+    this.courses[course.getID()] = course;
+  }
+
   /////////////////////////
   //setters and getters
   getID() {
@@ -48,6 +56,10 @@ class Major {
 
   getCreditsNeeded() {
     return this.creditsNeeded;
+  }
+
+  getCourses() {
+    return this.courses;
   }
 
   setCreditsNeeded(credits) {
