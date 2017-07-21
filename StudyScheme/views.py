@@ -29,10 +29,10 @@ def register():
     if request.method == 'POST' and form.validate():
         if not User.query.filter_by(username=form.username.data).first():
             new_user = User(form.username.data, form.password.data)
+            new_user.authenticated = True
             db.session.add(new_user)
             db.session.commit()
             flash('User successfully registered')
-            session['logged_in'] = True
             login_user(new_user, remember=True)
             return redirect(url_for('editor'))
         else:
@@ -46,7 +46,7 @@ def login():
     if request.method == 'POST' and form.validate():
         registered_user = User.query.filter_by(username=form.username.data, password=form.password.data).first()
         if registered_user:
-            session['logged_in'] = True
+            registered_user.authenticated = True
             login_user(registered_user, remember=True)
             return redirect(url_for('editor'))
         else:
@@ -56,7 +56,7 @@ def login():
 @app.route('/logout')
 @login_required
 def logout():
-    session['logged_in'] = False
+    current_user.authenticated = False
     logout_user()
     return redirect("index")
 
