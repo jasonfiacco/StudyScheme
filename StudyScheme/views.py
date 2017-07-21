@@ -147,7 +147,7 @@ def delete_course():
     course = Course.query.get(int(request.json['id']))
     db.session.delete(course)
     db.session.commit()
-    return jsonify( {'course': jsonify_course(new_course)} ), 201
+    return jsonify({'courses': [jsonify_course(course) for course in current_user.courses]}), 202
 
 def jsonify_course(course):
     new_course = {}
