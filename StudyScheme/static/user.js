@@ -156,6 +156,32 @@ class User {
     return getGPA(weightedTotal / (creditsToTake + creditsTaken));
   }
 
+  /**
+  * Removes the major with id from majors
+  * @param id[int]
+  * @return bool indicating success
+  **/
+  removeMajor(id) {
+    if (id in this.majors) {
+      delete this.majors[id];
+      return true;
+    }
+    return false;
+  }
+
+  /**
+  * Removes the major with id from majors
+  * @param id[int]
+  * @return bool indicating success
+  **/
+  removeCourse(id) {
+    if (id in this.courses) {
+      delete this.courses[id];
+      return true;
+    }
+    return false;
+  }  
+
   /////////////////////////
   // Getters and Setters
 

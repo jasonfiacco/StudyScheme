@@ -88,7 +88,30 @@ class Course {
   setAnticipatedGrade(grade) {
     this.anticipatedGrade = grade;
   }
-  //////////////////////
+  
+  //////////////////////////////////
+  // Network
+    deleteCurrentCourse(action) {
+    $.ajax({
+      url: "/academic_manager/delete_course",
+      contentType: "application/json",
+      type: "DELETE",
+      data: JSON.stringify(this),
+
+      statusCode: {
+        202: function(response) {
+          action(response);
+          console.log("sucessfully deleted course");
+        }
+      },
+
+      error: function(response) {
+        //TODO: action on failure
+        console.log("error deleting course");
+      }
+    });
+  }
+
 
   //////////////////////
   //JSON stuff

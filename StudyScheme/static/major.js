@@ -57,8 +57,32 @@ class Major {
   setName(name) {
     this.name = name.trim();
   }
-  ////////////////////////
 
+  //////////////////////////////
+  // Networking
+  deleteCurrentMajor(action) {
+    $.ajax({
+      url: "/academic_manager/delete_major",
+      contentType: "application/json",
+      type: "DELETE",
+      data: JSON.stringify(this),
+
+      statusCode: {
+        202: function(response) {
+          action(response);
+          console.log("sucessfully deleted major");
+        }
+      },
+
+      error: function(response) {
+        //TODO: action on failure
+        console.log("error deleting majors");
+      }
+    });
+  }
+
+
+  ////////////////////////
   //JSON Stuff
   getCourseIDList() {
     var courseIDs = []

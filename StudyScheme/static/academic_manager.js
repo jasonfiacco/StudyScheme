@@ -49,6 +49,20 @@ function addMajor(id, name, creditsNeeded, majors) {
 }
 
 /**
+* Creates a delete button
+* @param id[string], buttonClass[string]
+* @return DOM object
+**/
+function createDeleteButton(id, buttonClass) {
+  var button = document.createElement("button");
+  button.id = id;
+  button.innerHTML = "Delete";
+  button.className = buttonClass;
+  button.className += " btn btn-danger";
+  return button;
+}
+
+/**
 * Adds a major to the intended_majors tables
 * @param major[Major]
 * @return boolean indicating success or failure
@@ -88,10 +102,16 @@ function renderMajor(major) {
   majorGPAData.id = "majorGPA-" + major.getID();
   majorGPAData.innerHTML = major.currentGPA().toFixed(2);
 
+  var deleteMajorData = document.createElement("td");
+  var button = createDeleteButton("delete_major-" + major.getID(), 
+    "delete-major");
+  deleteMajorData.appendChild(button);
+
   row.appendChild(majorData);
   row.appendChild(creditsData);
   row.appendChild(creditsRemainingData);
   row.appendChild(majorGPAData);
+  row.appendChild(deleteMajorData);
   $("#intended_majors").append(row);
 
   return true;
@@ -118,8 +138,6 @@ function addCourse(id, name, credits, semester,
   }
   return false;
 }
-
-
 
 /**
 * Renders the course presented onto course table
@@ -175,11 +193,17 @@ function renderCourse(course) {
   select.value = course.getActualGrade();
   actualGradeData.appendChild(select);
 
+  var deleteCourseData = document.createElement("td");
+  var button = createDeleteButton("delete_course-" + course.getID(), 
+    "delete-course");
+  deleteCourseData.appendChild(button);
+
   row.appendChild(courseTitleData);
   row.appendChild(creditsData);
   row.appendChild(contributesToData);
   row.appendChild(anticipatedGradeData);
   row.appendChild(actualGradeData);
+  row.appendChild(deleteCourseData);
 
   $("#course_planner").append(row);
 
@@ -302,7 +326,7 @@ function refreshCoursePlannerFull() {
 * Refreshes all majors on the page
 **/
 function refreshMajors() {
-  $("#intended_majors").children(".major").remove();
+  $("#intended_majors > tbody").children(".major").remove();
   var majors = user.getMajors();
   for (var majorID in majors) {
     var major = user.getMajor(majorID);
@@ -438,9 +462,8 @@ $(document).ready(function() {
       user.sendCurrentCourses();
     });
 
-    $("#course_planner_semester > select").change(function() {
-      refreshCoursePlannerFull();
-    });
+    $("#course_planner_semester > select").change(
+      refreshCoursePlannerFull);
 
     ///////////////////////////////////
     // Adding new elements
@@ -451,7 +474,6 @@ $(document).ready(function() {
     * And add that created course into user and onto the page
     **/
     $("#add_course").click(function() {
-      console.log($("#course_planner_semester").val());
       $.ajax({
         url: "/academic_manager/create_course",
         contentType: "application/json",
@@ -518,5 +540,23 @@ $(document).ready(function() {
 
     $("#highest_GPA_semester > select").change(
       refreshInterfaceFast);
+
+    //////////////////////////
+    // Delete Events
+    $("#course_planner > tbody").on("click", ".delete-course", function() {
+      var id = getIdFromHtmlId($(this).attr("id"));
+      user.getCourse(id).deleteCurrentCourse(function() {
+        user.removeCourse(id);
+        refreshCourses();
+      });
+    });
+
+    $("#intended_majors > tbody").on("click", ".delete-major", function() {
+      var id = getIdFromHtmlId($(this).attr("id"));
+      user.getMajor(id).deleteCurrentMajor(function() {
+        user.removeMajor(id);
+        refreshMajors();
+      });
+    });      
   }
 });
