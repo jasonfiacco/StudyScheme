@@ -547,7 +547,7 @@ $(document).ready(function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       user.getCourse(id).deleteCurrentCourse(function() {
         user.removeCourse(id);
-        refreshCourses();
+        refreshCoursePlannerFull();
       });
     });
 
