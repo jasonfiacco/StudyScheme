@@ -605,6 +605,8 @@ $(document).ready(function() {
       user.getCourse(id).deleteCurrentCourse(function() {
         user.removeCourse(id);
         refreshCoursePlannerFull();
+        refreshMajors();
+        refreshInterfaceFast();
       });
     });
 
@@ -613,6 +615,7 @@ $(document).ready(function() {
       user.getMajor(id).deleteCurrentMajor(function() {
         user.removeMajor(id);
         refreshMajors();
+        refreshInterfaceFast();
       });
     });
   }

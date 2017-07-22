@@ -120,7 +120,7 @@ class Course {
   
   //////////////////////////////////
   // Network
-    deleteCurrentCourse(action) {
+    deleteCurrentCourse(actionSuccess) {
     $.ajax({
       url: "/academic_manager/delete_course",
       contentType: "application/json",
@@ -129,7 +129,7 @@ class Course {
 
       statusCode: {
         202: function(response) {
-          action(response);
+          actionSuccess(response);
           console.log("sucessfully deleted course");
         }
       },

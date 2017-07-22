@@ -93,7 +93,7 @@ class Major {
 
   //////////////////////////////
   // Networking
-  deleteCurrentMajor(action) {
+  deleteCurrentMajor(actionSuccess) {
     $.ajax({
       url: "/academic_manager/delete_major",
       contentType: "application/json",
@@ -102,7 +102,7 @@ class Major {
 
       statusCode: {
         202: function(response) {
-          action(response);
+          actionSuccess(response);
           console.log("sucessfully deleted major");
         }
       },

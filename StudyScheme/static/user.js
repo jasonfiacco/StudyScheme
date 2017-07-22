@@ -119,6 +119,7 @@ class User {
   * @return double that represents the anticipated GPA
   **/
   anticipatedGPA(maxSemester) {
+    maxSemester = parseInt(maxSemester);
     var weightedTotal = 0;
     for (var course in this.courses) {
       course = this.courses[course];
@@ -135,9 +136,11 @@ class User {
   /**
   * Calculates the highest GPA of user assuming they only take
   * as many credits as needed
+  * @param maxSemester[int]
   * @return double of highest grade user can obtain
   **/
   highestGPA(maxSemester) {
+    maxSemester = parseInt(maxSemester);
     if (this.getCompletedSemester >= maxSemester) {
       return this.currentGPA();
     }
@@ -159,7 +162,7 @@ class User {
     var creditsToTake = Math.max(this.creditsRemaining() * semestersToTake / semestersLeft, 0);
     //Add the higest weight possible and calculate GPA
     weightedTotal += 4.0 * creditsToTake;
-    return getGPA(weightedTotal / (creditsToTake + creditsTaken));
+    return weightedTotal / (creditsToTake + creditsTaken);
   }
 
   /**
