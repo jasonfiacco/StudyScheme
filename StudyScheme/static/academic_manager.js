@@ -441,8 +441,7 @@ $(document).ready(function() {
       major.setCreditsNeeded($(this).val());
       var target = "#creditsRemaining-" + id;
       $(target).html(major.creditsRemaining());
-      refreshInterfaceFast();
-      user.sendCurrentMajors();
+      user.sendCurrentMajors(refreshInterfaceFast);
     });
 
     /**
@@ -454,8 +453,7 @@ $(document).ready(function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       var major = user.getMajor(id);
       major.setName($(this).val());
-      refreshInterfaceFast();
-      user.sendCurrentMajors();
+      user.sendCurrentMajors(refreshInterfaceFast);
     });
 
 
@@ -470,8 +468,7 @@ $(document).ready(function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       var course = user.getCourse(id);
       course.setName($(this).val());
-      refreshInterfaceFast();
-      user.sendCurrentCourses();
+      user.sendCurrentCourses(refreshInterfaceFast);
     });
 
     /**
@@ -482,8 +479,7 @@ $(document).ready(function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       var course = user.getCourse(id);
       course.setCredits($(this).val());
-      refreshInterfaceFast();
-      user.sendCurrentCourses();
+      user.sendCurrentCourses(refreshInterfaceFast);
     });
 
     /**
@@ -494,8 +490,7 @@ $(document).ready(function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       var course = user.getCourse(id);
       course.setAnticipatedGrade($(this).val());
-      refreshInterfaceFast();
-      user.sendCurrentCourses();
+      user.sendCurrentCourses(refreshInterfaceFast);
     });
 
     /**
@@ -506,8 +501,7 @@ $(document).ready(function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       var course = user.getCourse(id);
       course.setActualGrade($(this).val());
-      refreshInterfaceFast();
-      user.sendCurrentCourses();
+      user.sendCurrentCourses(refreshInterfaceFast);
     });
 
     /**
