@@ -15,6 +15,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(120))
     total_credits_needed = db.Column(db.Integer)
+    authenticated = db.Column(db.Boolean, default=False)
 
     majors = db.relationship('Major', backref='user', lazy='dynamic')
     courses = db.relationship('Course', backref='user', lazy='dynamic')
@@ -35,7 +36,7 @@ class User(db.Model):
 
     def is_authenticated(self):
         """Return True if user is authenticated."""
-        return True
+        return self.authenticated
 
     def is_anonymous(self):
         """Anonymous users aren't supported."""
