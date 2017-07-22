@@ -41,6 +41,9 @@ class Major {
     var weightedTotal = 0;
     for (var course in this.courses) {
       course = this.courses[course];
+      if (!course.completed()) {
+        continue;
+      }
       weightedTotal += course.actualGrade * course.credits;
     }
     return getGPA(weightedTotal / this.creditsTaken());
