@@ -25,7 +25,13 @@ class User {
     }
     for (var courseIndex in courses) {
       var course = Course.loadCourseFromJSON(courses[courseIndex]);
+      //Convert the IDs to actual major objects
+      course.convertListToObjects(user);
       user.addCourse(course);
+    }
+    //Second pass load majors
+    for (var majorIndex in user.majors) {
+      user.majors[majorIndex].convertListToObjects(user);
     }
     return user;
   }
@@ -296,7 +302,7 @@ class User {
   /**
   * Sends a list of current courses in JSON form
   **/
-  sendCurrentCourses() {
+  sendCurrentCourses(actionSuccess) {
     $.ajax({
       url: "/academic_manager/update_courses",
       contentType: "application/json",
@@ -304,8 +310,9 @@ class User {
       data: JSON.stringify({"courses" : this.getCoursesList()}),
 
       success: function(response) { 
-        //TODO: action on success
-        console.log("sucessfully updated courses");
+        if (actionSuccess) {
+          actionSuccess(response);
+        }
       },
 
       error: function(response) {
@@ -318,7 +325,7 @@ class User {
   /**
   * Sends the Current User to the server
   **/
-  sendCurrentUser() {
+  sendCurrentUser(actionSuccess) {
     $.ajax({
       url: "/academic_manager/update_user",
       contentType: "application/json",
@@ -326,8 +333,9 @@ class User {
       data: JSON.stringify(this),
 
       success: function(response) { 
-        //TODO: action on success
-        console.log("sucessfully updated courses");
+        if (actionSuccess) {
+          actionSuccess(response);
+        }
       },
 
       error: function(response) {

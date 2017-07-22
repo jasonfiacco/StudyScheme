@@ -5,11 +5,7 @@ class Course {
     this.name = name.trim();
     this.credits = credits;
     this.semester = semester;
-    this.majors = {};
-    for (var major in majors) {
-      var majorID = majors[major];
-      this.majors[majorID] = user.getMajor(majorID);
-    }
+    this.majors = majors || {};
     this.actualGrade = actualGrade;
     this.anticipatedGrade = anticipatedGrade;
   }
@@ -19,7 +15,17 @@ class Course {
   static loadCourseFromJSON(json) {
     return new Course(json["id"], json["name"], 
       json["credits"], json["semester"],
-      json["actual_grade"], json["anticipated_grade"]);
+      json["actual_grade"], json["anticipated_grade"],
+      json["majors"]);
+  }
+
+  convertListToObjects(user) {
+    var temp = {};
+    for (var index in this.majors) {
+      var majorID = this.majors[index];
+      temp[majorID] = user.getMajor(majorID);
+    }
+    this.majors = temp;
   }
 
   /**
@@ -42,6 +48,17 @@ class Course {
     this.majors[major.getID()] = major;
   }
 
+  toggleMajor(major) {
+    if (major.getID() in this.majors) {
+      this.deleteMajor(major);
+    } else {
+      this.addMajor(major);
+    }
+  }
+
+  deleteMajor(major) {
+    delete this.majors[major.getID()];
+  }
   /////////////////
   //setters and getters
 

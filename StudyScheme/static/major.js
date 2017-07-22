@@ -3,17 +3,23 @@ class Major {
     this.id = id;
     this.name = name.trim();
     this.creditsNeeded = creditsNeeded;
-    this.courses = {};
-    for (var course in courses) {
-      var courseID = courses[course];
-      this.courses[courseID] = user.getCourse(courseID);
-    }
+    this.courses = courses || {};
   }
 
   //////////////////////////////////////
   // Loaders
   static loadMajorFromJSON(json) {
-    return new Major(json["id"], json["name"], json["credits_needed"]);
+    return new Major(json["id"], json["name"], 
+      json["credits_needed"], json["courses"]);
+  }
+
+  convertListToObjects(user) {
+    var temp = {};
+    for (var index in this.courses) {
+      var courseID = this.courses[index];
+      temp[courseID] = user.getCourse(courseID);
+    }
+    this.courses = temp;
   }
 
   creditsTaken() {
@@ -42,6 +48,18 @@ class Major {
 
   addCourse(course) {
     this.courses[course.getID()] = course;
+  }
+
+  toggleCourse(course) {
+    if (course.getID() in this.courses) {
+      this.deleteCourse(course);
+    } else {
+      this.addCourse(course);
+    }
+  }
+
+  deleteCourse(course) {
+    delete this.courses[course.getID()];
   }
 
   /////////////////////////

@@ -125,7 +125,7 @@ function renderMajor(major) {
 * @param options[dictionary]
 * @return DOM object
 **/
-function createMultipleSelect(options) {
+function createMultipleSelect(options, header) {
   var dropdown = document.createElement("div");
   dropdown.className += "dropdown";
 
@@ -149,7 +149,7 @@ function createMultipleSelect(options) {
       text = "<em>(no name)</em>"
     }
     innerItem.innerHTML = text;
-    item.className += optionKey;
+    item.id += header + optionKey;
     item.appendChild(innerItem);
     select.appendChild(item);
   }
@@ -206,11 +206,11 @@ function renderCourse(course) {
 
   var contributesToData = document.createElement("td");
   //TODO: implement contributesTo
-  var dropdown = createMultipleSelect(user.getMajorIDtoName());
+  var dropdown = createMultipleSelect(user.getMajorIDtoName(), "contribute_select-");
   dropdown.className += " contribute-majors";
   dropdown.id = "contribute-" + course.getID();
-  $(dropdown).children("ul").children("li").each(function() {
-    if ($(this).attr("class") in course.getMajors()) {
+  $(dropdown).children("ul").first().children("li").each(function() {
+    if (getIdFromHtmlId($(this).attr("id")) in course.getMajors()) {
       $(this).addClass("select-toggled");
     }
   });
@@ -510,8 +510,27 @@ $(document).ready(function() {
       user.sendCurrentCourses();
     });
 
+    /**
+    * When the selected semester changes
+    * Do a full refresh of planner elements
+    **/
     $("#course_planner_semester > select").change(
       refreshCoursePlannerFull);
+
+    $("#course_planner").on("click", "tbody > tr > td > .contribute-majors > ul > li", function() {
+      console.log("action taken");
+      var majorID = getIdFromHtmlId($(this).attr("id")); 
+      var courseID = getIdFromHtmlId($(this).closest(".contribute-majors").attr("id"));
+      var course = user.getCourse(courseID);
+      var major = user.getMajor(majorID);
+      course.toggleMajor(major);
+      major.toggleCourse(course);
+      user.sendCurrentCourses(function() {
+        refreshCoursePlannerFull();
+        refreshInterfaceFast();
+      });
+      return false;
+    });
 
     ///////////////////////////////////
     // Adding new elements
@@ -576,8 +595,7 @@ $(document).ready(function() {
     **/
     $("#credits_needed").change(function() {
       user.setCreditsNeeded($("#credits_needed").val());
-      refreshInterfaceFast();
-      user.sendCurrentUser();
+      user.sendCurrentUser(refreshInterfaceFast);
     });
 
     /////////////////////////
@@ -604,6 +622,6 @@ $(document).ready(function() {
         user.removeMajor(id);
         refreshMajors();
       });
-    });   
+    });
   }
 });
