@@ -208,7 +208,6 @@ class Course {
       statusCode: {
         202: function(response) {
           actionSuccess(response);
-          console.log("sucessfully deleted course");
         }
       },
 
