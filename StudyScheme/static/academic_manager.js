@@ -299,16 +299,6 @@ function refreshCreditsRemaining() {
 }
 
 /**
-* Refreshes all of the major credits remaining
-**/
-function refreshMajorsCreditsRemaining() {
-  $(".creditsRemaining").each(function(index) {
-    var id = getIdFromHtmlId($(this).attr("id"));
-    $(this).html(user.getMajor(id).creditsRemaining());
-  });
-}
-
-/**
 * Refreshes current GPA
 **/
 function refreshActualGPA() {
@@ -340,7 +330,6 @@ function refreshCreditsNeeded() {
 **/
 function refreshInterfaceFast() {
   refreshCreditsRemaining();
-  refreshMajorsCreditsRemaining();
   refreshActualGPA();
   refreshAnticipatedGPA();
   refreshHighestGPA();
@@ -453,7 +442,10 @@ $(document).ready(function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       var major = user.getMajor(id);
       major.setName($(this).val());
-      user.sendCurrentMajors(refreshInterfaceFast);
+      user.sendCurrentMajors(function() {
+        refreshInterfaceFast();
+        refreshCoursePlannerFull();
+      });
     });
 
 
@@ -479,7 +471,10 @@ $(document).ready(function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       var course = user.getCourse(id);
       course.setCredits($(this).val());
-      user.sendCurrentCourses(refreshInterfaceFast);
+      user.sendCurrentCourses(function() {
+        refreshInterfaceFast();
+        refreshMajors();
+      });
     });
 
     /**
@@ -501,7 +496,10 @@ $(document).ready(function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       var course = user.getCourse(id);
       course.setActualGrade($(this).val());
-      user.sendCurrentCourses(refreshInterfaceFast);
+      user.sendCurrentCourses(function() {
+        refreshInterfaceFast();
+        refreshMajors();
+      });
     });
 
     /**
@@ -512,7 +510,6 @@ $(document).ready(function() {
       refreshCoursePlannerFull);
 
     $("#course_planner").on("click", "tbody > tr > td > .contribute-majors > ul > li", function() {
-      console.log("action taken");
       var majorID = getIdFromHtmlId($(this).attr("id")); 
       var courseID = getIdFromHtmlId($(this).closest(".contribute-majors").attr("id"));
       var course = user.getCourse(courseID);
@@ -522,6 +519,7 @@ $(document).ready(function() {
       user.sendCurrentCourses(function() {
         refreshCoursePlannerFull();
         refreshInterfaceFast();
+        refreshMajors();
       });
       return false;
     });

@@ -280,7 +280,7 @@ class User {
   /**
   * Sends a list of current Majors in JSON form
   **/
-  sendCurrentMajors() {
+  sendCurrentMajors(actionSuccess) {
     $.ajax({
       url: "/academic_manager/update_majors",
       contentType: "application/json",
@@ -289,7 +289,9 @@ class User {
 
       success: function(response) {
         //TODO: action on success
-        console.log("sucessfully updated majors");
+        if (actionSuccess) {
+          actionSuccess(response);
+        }
       },
 
       error: function(response) {
