@@ -44,6 +44,9 @@ class Course {
     this.majors = temp;
   }
 
+  ////////////////////////
+  // Status functions
+
   /**
   * Determines if class is taken yet
   * @return boolean representing whether course has been taken yet
@@ -87,6 +90,7 @@ class Course {
   deleteMajor(major) {
     delete this.majors[major.getID()];
   }
+  
   /////////////////
   //setters and getters
 
