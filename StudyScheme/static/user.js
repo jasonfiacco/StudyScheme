@@ -1,4 +1,8 @@
 class User {
+  /**
+  * Constructs a new user
+  * @param id[int], creditsNeede(int);
+  **/
   constructor(id, creditsNeeded) {
     this.id = parseInt(id);
     this.creditsNeeded = parseInt(creditsNeeded);
@@ -11,6 +15,7 @@ class User {
 
   //////////////////////////////
   // Loaders
+
   /**
   * Loads a User from JSON
   * @return User
@@ -212,14 +217,26 @@ class User {
     return maxSemester;
   }
 
+  /**
+  * Gets the number of credits needed for the until graduation
+  * @return double representing number of credits needed
+  **/
   getCreditsNeeded() {
     return this.creditsNeeded;
   }
 
+  /**
+  * Gets the associated list of majors
+  * @return dictionary<int, Major>
+  **/
   getMajors() {
     return this.majors;
   }
 
+  /**
+  * Get a list of majors
+  * @return list<Major>
+  **/
   getMajorsList() {
     var majors = [];
     for (var majorID in this.majors) {
@@ -228,6 +245,10 @@ class User {
     return majors;
   }
 
+  /**
+  * Get a dictionary of major ID's to names
+  * @return hash<int, string>
+  **/
   getMajorIDtoName() {
     var majors = {};
     for (var majorID in this.majors) {
@@ -236,18 +257,36 @@ class User {
     return majors;
   }
 
+  /**
+  * Gets the major with the given ID
+  * @param id[int]
+  * @return Major
+  **/
   getMajor(id) {
     return this.majors[id];
   }
 
+  /**
+  * Gets the course with the given ID
+  * @param id[int]
+  * @return Course
+  **/
   getCourse(id) {
     return this.courses[id];
   }
 
+  /**
+  * Gets a list of all MajorIDs
+  * @return list<string>
+  **/
   getMajorIDList() {
     return Object.keys(this.majors);
   }
 
+  /**
+  * Gets a list of all Major Names
+  * @return list<string>
+  **/
   getMajorNameList() {
     var names = [];
     for (var majorID in this.majors) {
@@ -257,14 +296,26 @@ class User {
     return names;
   }
 
+  /**
+  * Gets a list of all CourseIDs
+  * @return list<string>
+  **/
   getCourseIDList() {
     return Object.keys(this.courses);
   }
 
+  /**
+  * Gets the dictionary of courses
+  * @return dictionary<string, Course>
+  **/
   getCourses() {
     return this.courses;
   }
 
+  /**
+  * Gets a list of courses
+  * @return list<Course>
+  **/
   getCoursesList() {
     var courses = [];
     for (var coursesID in this.courses) {
@@ -273,8 +324,12 @@ class User {
     return courses;    
   }
 
+  /**
+  * Sets the number of credits needed to graduate
+  * @param credits[float]
+  **/
   setCreditsNeeded(credits) {
-    this.creditsNeeded = parseInt(credits);
+    this.creditsNeeded = parseFloat(credits);
   }
 
   ////////////////////////
@@ -282,6 +337,7 @@ class User {
 
   /**
   * Sends a list of current Majors in JSON form
+  * @param actionSuccess[function]
   **/
   sendCurrentMajors(actionSuccess) {
     $.ajax({
@@ -306,6 +362,7 @@ class User {
 
   /**
   * Sends a list of current courses in JSON form
+  * @param actionSuccess[function]
   **/
   sendCurrentCourses(actionSuccess) {
     $.ajax({
@@ -329,6 +386,7 @@ class User {
 
   /**
   * Sends the Current User to the server
+  * @param actionSuccess[function]
   **/
   sendCurrentUser(actionSuccess) {
     $.ajax({
@@ -353,6 +411,10 @@ class User {
 
   /////////////////////////
   //JSON stuff
+
+  /**
+  * Converts user to JSON
+  **/
   toJSON() {
     return {
       "id" : this.id,

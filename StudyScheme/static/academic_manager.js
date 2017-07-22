@@ -1,5 +1,8 @@
 var user;
 
+//////////////////////////
+// Constants
+
 var MAX_SEMESTERS = 8;
 
 var GRADE_CONVERSIONS = {
@@ -19,6 +22,10 @@ var GRADE_CONVERSIONS = {
   13 : 'A+',
 };
 
+
+////////////////////
+// Helper Functions
+
 /**
 * Calculates the grade from the current score
 * Note: uses the fixed calculations for now, assumes max is 4.0
@@ -27,6 +34,10 @@ var GRADE_CONVERSIONS = {
 function getGPA(score) {
   return Math.min(score / 3.0, 4.0);
 }
+
+
+/////////////////////////////
+// Rendering functions
 
 /**
 * Renders the major, then adds it to the dictionary
@@ -267,30 +278,6 @@ function getIdFromHtmlId(HtmlId) {
   return HtmlId.split("-")[1];
 }
 
-$(window).on("load", function(){
-  /**
-  * creates a jQuery DOM Selector for semesters
-  * @return jQuery object that is a selector
-  **/
-  function createSemesterSelector() {
-    var select = $("<select></select>");
-    for (var x = 1; x <= MAX_SEMESTERS; x++) {
-      var option = $("<option></option>").val(x).text("Semester " + x);
-      select.append(option);
-    }
-    return select;
-  }
-  
-  /**
-  * Adds the semesters to the various dropdowns
-  **/
-  $("#course_planner_semester").append(createSemesterSelector());
-  $("#anticipated_GPA_semester").append(createSemesterSelector());
-  $("#highest_GPA_semester").append(createSemesterSelector());
-
-  user = new User();
-});
-
 /**
 * Refreshes the number of credits remaining in the interface
 **/
@@ -321,6 +308,9 @@ function refreshHighestGPA() {
   $("#highest_gpa").html(user.highestGPA(maxSemester).toFixed(2));
 }
 
+/**
+* Refreshes the number of credits needed for graduation
+**/
 function refreshCreditsNeeded() {
   $("#credits_needed").val(user.getCreditsNeeded());
 }
@@ -383,14 +373,46 @@ function refreshInterfaceFull() {
   refreshInterfaceFast();
 }
 
+///////////////////////////////
+// Event functions
+
 /**
-* Runs only once when the page loads
+* Loads the menus on window load
+**/
+$(window).on("load", function(){
+  /**
+  * creates a jQuery DOM Selector for semesters
+  * @return jQuery object that is a selector
+  **/
+  function createSemesterSelector() {
+    var select = $("<select></select>");
+    for (var x = 1; x <= MAX_SEMESTERS; x++) {
+      var option = $("<option></option>").val(x).text("Semester " + x);
+      select.append(option);
+    }
+    return select;
+  }
+  
+  /**
+  * Adds the semesters to the various dropdowns
+  **/
+  $("#course_planner_semester").append(createSemesterSelector());
+  $("#anticipated_GPA_semester").append(createSemesterSelector());
+  $("#highest_GPA_semester").append(createSemesterSelector());
+});
+
+/**
+* Function runs only once when the page loads
+* Loads a semester and refreshes interface
 **/
 function onStartLoad() {
   $("#course_planner_semester > select").val(Math.max(user.getCompletedSemester(), 1));
   refreshInterfaceFull();
 }
 
+/**
+* Controls most of the interfance with events
+**/
 $(document).ready(function() {
   /**
   * Loads a user from network and returns a user object
@@ -411,6 +433,9 @@ $(document).ready(function() {
     },
   });
 
+  /**
+  * Actions to be taken when user has been loaded
+  **/
   function userLoadedHandler() {  
     console.log("page ready");
 
@@ -509,6 +534,9 @@ $(document).ready(function() {
     $("#course_planner_semester > select").change(
       refreshCoursePlannerFull);
 
+    /**
+    * Control for selecting what major courses contribute to
+    **/
     $("#course_planner").on("click", "tbody > tr > td > .contribute-majors > ul > li", function() {
       var majorID = getIdFromHtmlId($(this).attr("id")); 
       var courseID = getIdFromHtmlId($(this).closest(".contribute-majors").attr("id"));
@@ -600,6 +628,10 @@ $(document).ready(function() {
 
     //////////////////////////
     // Delete Events
+
+    /**
+    * Deleting a course
+    **/
     $("#course_planner > tbody").on("click", ".delete-course", function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       user.getCourse(id).deleteCurrentCourse(function() {
@@ -610,6 +642,9 @@ $(document).ready(function() {
       });
     });
 
+    /**
+    * Deleting a major
+    **/
     $("#intended_majors > tbody").on("click", ".delete-major", function() {
       var id = getIdFromHtmlId($(this).attr("id"));
       user.getMajor(id).deleteCurrentMajor(function() {
