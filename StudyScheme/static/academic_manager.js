@@ -102,7 +102,7 @@ function renderMajor(major) {
   creditsEntry.className += " major-field";
   creditsData.appendChild(creditsEntry);
 
-  //render remaining credits needed 
+  //render remaining credits needed
   var creditsRemainingData = document.createElement("td");
   creditsRemainingData.class += "creditsRemaining";
   creditsRemainingData.id = "creditsRemaining-" + major.getID();
@@ -114,7 +114,7 @@ function renderMajor(major) {
   majorGPAData.innerHTML = major.currentGPA().toFixed(2);
 
   var deleteMajorData = document.createElement("td");
-  var button = createDeleteButton("delete_major-" + major.getID(), 
+  var button = createDeleteButton("delete_major-" + major.getID(),
     "delete-major");
   deleteMajorData.appendChild(button);
 
@@ -130,7 +130,7 @@ function renderMajor(major) {
 
 /**
 * Creates a multiple select list
-* that has keys of options as values and 
+* that has keys of options as values and
 * values of options as the displayed text
 * vals are stored as the class name
 * @param options[dictionary]
@@ -165,7 +165,7 @@ function createMultipleSelect(options, header) {
     select.appendChild(item);
   }
   dropdown.appendChild(select);
-  
+
   return dropdown;
 }
 
@@ -174,14 +174,14 @@ function createMultipleSelect(options, header) {
 * @param id[int], name[String], credits[double], semester[int]
 * @return boolean represeting success
 **/
-function addCourse(id, name, credits, semester, 
+function addCourse(id, name, credits, semester,
   actualGrade, anticipatedGrade, majors) {
   if (user.getCourse(id)) {
     console.log("Course " + id + " already exists");
     return false;
   }
 
-  var course = new Course(id, name, credits, semester, 
+  var course = new Course(id, name, credits, semester,
     actualGrade, anticipatedGrade, majors);
 
   if (renderCourse(course)) {
@@ -253,7 +253,7 @@ function renderCourse(course) {
   actualGradeData.appendChild(select);
 
   var deleteCourseData = document.createElement("td");
-  var button = createDeleteButton("delete_course-" + course.getID(), 
+  var button = createDeleteButton("delete_course-" + course.getID(),
     "delete-course");
   deleteCourseData.appendChild(button);
 
@@ -272,7 +272,7 @@ function renderCourse(course) {
 /**
 * Gets the ID from the HTML ID assuming naming conventions are met
 * @param HtmlId[String]
-* @return String that represents the id 
+* @return String that represents the id
 **/
 function getIdFromHtmlId(HtmlId) {
   return HtmlId.split("-")[1];
@@ -392,7 +392,7 @@ $(window).on("load", function(){
     }
     return select;
   }
-  
+
   /**
   * Adds the semesters to the various dropdowns
   **/
@@ -436,7 +436,7 @@ $(document).ready(function() {
   /**
   * Actions to be taken when user has been loaded
   **/
-  function userLoadedHandler() {  
+  function userLoadedHandler() {
     console.log("page ready");
 
 
@@ -538,7 +538,7 @@ $(document).ready(function() {
     * Control for selecting what major courses contribute to
     **/
     $("#course_planner").on("click", "tbody > tr > td > .contribute-majors > ul > li", function() {
-      var majorID = getIdFromHtmlId($(this).attr("id")); 
+      var majorID = getIdFromHtmlId($(this).attr("id"));
       var courseID = getIdFromHtmlId($(this).closest(".contribute-majors").attr("id"));
       var course = user.getCourse(courseID);
       var major = user.getMajor(majorID);
@@ -575,7 +575,7 @@ $(document).ready(function() {
           201 : function(result) {
             var obj = $.parseJSON(result.responseText);
             var course = obj.course;
-            addCourse(course.id, course.name, course.credits, course.semester, 
+            addCourse(course.id, course.name, course.credits, course.semester,
               course.actual_grade, course.anticipated_grade, course.majors);
           }
         },
