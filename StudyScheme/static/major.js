@@ -6,7 +6,7 @@ class Major {
   constructor(id, name, creditsNeeded, courses) {
     this.id = id;
     this.name = name.trim();
-    this.creditsNeeded = parseFloat(creditsNeeded);
+    this.creditsNeeded = parseFloat(creditsNeeded) || 0;
     this.courses = courses || {};
   }
 

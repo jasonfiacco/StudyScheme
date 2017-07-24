@@ -111,7 +111,11 @@ function renderMajor(major) {
   //render GPA slot
   var majorGPAData = document.createElement("td");
   majorGPAData.id = "majorGPA-" + major.getID();
-  majorGPAData.innerHTML = major.currentGPA().toFixed(2);
+  if (major.currentGPA()) {
+    majorGPAData.innerHTML = major.currentGPA().toFixed(2);
+  } else {
+   majorGPAData.innerHTML = "--";
+  }
 
   var deleteMajorData = document.createElement("td");
   var button = createDeleteButton("delete_major-" + major.getID(),

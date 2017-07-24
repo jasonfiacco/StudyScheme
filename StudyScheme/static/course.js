@@ -9,7 +9,7 @@ class Course {
     actualGrade, anticipatedGrade, majors) {
     this.id = id;
     this.name = name.trim();
-    this.credits = credits;
+    this.credits = credits || 0;
     this.semester = semester;
     this.majors = majors || {};
     this.actualGrade = actualGrade;

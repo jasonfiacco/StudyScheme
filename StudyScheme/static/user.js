@@ -5,10 +5,7 @@ class User {
   **/
   constructor(id, creditsNeeded) {
     this.id = parseInt(id);
-    this.creditsNeeded = parseInt(creditsNeeded);
-    if (isNaN(this.creditsNeeded)) {
-      this.creditsNeeded = 0;
-    }
+    this.creditsNeeded = parseInt(creditsNeeded) || 0;
     this.courses = {};
     this.majors = {};
   }
