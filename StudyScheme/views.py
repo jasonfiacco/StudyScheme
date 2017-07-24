@@ -134,8 +134,7 @@ def update_courses():
          course.semester = updated_course['semester']
          course.anticipated_grade = updated_course['anticipated_grade']
          course.actual_grade = updated_course['actual_grade']
-         for major in Major.query.filter(Major.id.in_(updated_course['majors'])).all():
-            major.courses.append(course)
+         course.majors = list(Major.query.filter(Major.id.in_(updated_course['majors'])).all())
          db.session.commit()
      return jsonify({'courses': [jsonify_course(course) for course in current_user.courses]}), 200
 
