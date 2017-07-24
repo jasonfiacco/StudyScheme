@@ -192,6 +192,26 @@ function addCourse(id, name, credits, semester,
 }
 
 /**
+* Makes a contribute major list item from a major
+* @param major[Major]
+* @return DOM object
+**/
+function createContributesMajorListItem(major) {
+  var majorItem = document.createElement("span");
+  majorItem.className += "major-list-item";
+  majorItem.id += "major_list_item-" + major.getID();
+  var p = document.createElement("p");
+  p.innerHTML = major.getName();
+  var s = document.createElement("span");
+  s.innerHTML = "<a href=# class=\"delete-link\">x</a>";
+  s.className += "remove-major";
+  s.id += "remove-" + major.getID();
+  p.appendChild(s);
+  majorItem.appendChild(p);
+  return majorItem;
+}
+
+/**
 * Renders the course presented onto course table
 * @param course[Course]
 * @return boolean representing success
@@ -227,6 +247,14 @@ function renderCourse(course) {
   });
   contributesToData.appendChild(dropdown);
 
+  var contributesToListData = document.createElement("td");
+  contributesToListData.className += "contribute-majors-list";
+  contributesToListData.id = "contribute_majors-" + course.getID();
+  for (majorID in course.getMajors()) {
+    var major = user.getMajor(majorID);
+    contributesToListData.append(createContributesMajorListItem(major));
+  }
+
   var createGradeDropdowns = function(val) {
     var select = document.createElement("select");
     for (var gradeID in GRADE_CONVERSIONS) {
@@ -260,6 +288,7 @@ function renderCourse(course) {
   row.appendChild(courseTitleData);
   row.appendChild(creditsData);
   row.appendChild(contributesToData);
+  row.appendChild(contributesToListData);
   row.appendChild(anticipatedGradeData);
   row.appendChild(actualGradeData);
   row.appendChild(deleteCourseData);
@@ -331,7 +360,7 @@ function refreshInterfaceFast() {
 **/
 function refreshCoursePlanner(semester) {
   //remove all children
-  $("#course_planner > tbody").children(".course").remove();
+  $("#course_planner > tbody").empty();
   var courses = user.getCourses();
   for (var courseID in courses) {
     var course = user.getCourse(courseID);
@@ -353,7 +382,7 @@ function refreshCoursePlannerFull() {
 * Refreshes all majors on the page
 **/
 function refreshMajors() {
-  $("#intended_majors > tbody").children(".major").remove();
+  $("#intended_majors > tbody").empty();
   var majors = user.getMajors();
   for (var majorID in majors) {
     var major = user.getMajor(majorID);
@@ -552,6 +581,23 @@ $(document).ready(function() {
       return false;
     });
 
+    var removeMajorListButton = "tbody > .course > .contribute-majors-list" +
+      " > .major-list-item > p > .remove-major";
+    $("#course_planner").on("click", removeMajorListButton, function() {
+      var majorID = getIdFromHtmlId($(this).attr("id")); 
+      var courseID = getIdFromHtmlId($(this).closest(".contribute-majors-list").attr("id"));
+      var course = user.getCourse(courseID);
+      var major = user.getMajor(majorID);
+      course.toggleMajor(major);
+      major.toggleCourse(course);
+      user.sendCurrentCourses(function() {
+        refreshCoursePlannerFull();
+        refreshInterfaceFast();
+        refreshMajors();
+      });
+      return false;
+    });
+
     ///////////////////////////////////
     // Adding new elements
 
@@ -604,6 +650,7 @@ $(document).ready(function() {
             var obj = $.parseJSON(result.responseText);
             var major = obj.major;
             addMajor(major.id, major.name, major.credits_needed, major.courses);
+            refreshCoursePlannerFull();
           }
         },
       });
@@ -651,6 +698,7 @@ $(document).ready(function() {
         user.removeMajor(id);
         refreshMajors();
         refreshInterfaceFast();
+        refreshCoursePlannerFull();        
       });
     });
   }
