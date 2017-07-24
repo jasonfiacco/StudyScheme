@@ -9,3 +9,31 @@
 .select-toggled {
   background-color: #e8e8e8;
 }
+
+.course-credits {
+  width: 100%;
+}
+
+.major-list-item {
+  border: solid;
+  border-radius: 7px;
+  display: inline-block;
+  margin-right: 5px;
+  padding: 5px 5px 0 5px;
+  background-color: #ced2ff;
+  border-color: #9090e5;
+  border-width: 1px;
+}
+
+.remove-major {
+  color: red;
+  margin-left: 5px;
+}
+
+.delete-link {
+  color: red;
+}
+
+.delete-link:hover {
+  color: red;
+}
