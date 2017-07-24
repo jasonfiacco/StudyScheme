@@ -685,8 +685,13 @@ $(document).ready(function() {
     **/
     $("#course_planner > tbody").on("click", ".delete-course", function() {
       var id = getIdFromHtmlId($(this).attr("id"));
-      user.getCourse(id).deleteCurrentCourse(function() {
+      var course = user.getCourse(id);
+      course.deleteCurrentCourse(function() {
         user.removeCourse(id);
+        for (majorID in course.getMajors()) {
+          var major = user.getMajor(majorID);
+          major.deleteCourse(course);
+        }
         refreshCoursePlannerFull();
         refreshMajors();
         refreshInterfaceFast();
@@ -698,8 +703,13 @@ $(document).ready(function() {
     **/
     $("#intended_majors > tbody").on("click", ".delete-major", function() {
       var id = getIdFromHtmlId($(this).attr("id"));
-      user.getMajor(id).deleteCurrentMajor(function() {
+      var major = user.getMajor(id);
+      major.deleteCurrentMajor(function() {
         user.removeMajor(id);
+        for (courseID in major.getCourses()) {
+          var course = user.getCourse(courseID);
+          course.deleteMajor(major);
+        }
         refreshMajors();
         refreshInterfaceFast();
         refreshCoursePlannerFull();        
