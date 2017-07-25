@@ -12,6 +12,10 @@ login_manager.init_app(app)
 login_manager.login_view = "login.html"
 
 
+@app.route('/')
+def main():
+    return redirect(url_for('index'))
+
 
 @app.route('/index')
 def index():
