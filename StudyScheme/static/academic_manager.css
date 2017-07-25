@@ -20,9 +20,18 @@
   display: inline-block;
   margin-right: 5px;
   padding: 5px 5px 0 5px;
-  background-color: #ced2ff;
+  background: #ab7ad6;
+  background: linear-gradient(#c087f2, #ab7ad6);
   border-color: #9090e5;
   border-width: 1px;
+  box-shadow: inset 0 0 5px gray;
+  color: white;
+}
+
+.major-list-item p {
+  font-size: 14px;
+  font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: bold;
 }
 
 .remove-major {
