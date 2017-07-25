@@ -19,19 +19,25 @@
   border-radius: 7px;
   display: inline-block;
   margin-right: 5px;
-  padding: 5px 5px 0 5px;
-  background: #ab7ad6;
-  background: linear-gradient(#c087f2, #ab7ad6);
+  padding: 5px 10px 0 10px;
+  background: #a679ce;
+  background: linear-gradient(#a679ce, #8d66af);
   border-color: #9090e5;
   border-width: 1px;
   box-shadow: inset 0 0 5px gray;
   color: white;
 }
 
+.major-list-item:hover {
+  background: #a679ce;
+  background: linear-gradient(#a679ce, #5f4675);
+  cursor: pointer;
+}
+
 .major-list-item p {
   font-size: 14px;
   font-family: 'Lato', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: bold;
+  font-weight: normal;
 }
 
 .remove-major {
@@ -40,9 +46,11 @@
 }
 
 .delete-link {
-  color: red;
+  color: #000000;
+  font-weight: bolder;
 }
 
 .delete-link:hover {
   color: red;
+  text-decoration: none;
 }
