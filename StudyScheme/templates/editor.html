@@ -1,16 +1,14 @@
 {% extends "layout.html" %}
 {% block body %}
   <div class="container">
-    <div class="col-md-12">
-      <div class="col-sm-6">
-        <h3>Total Credits Needed:
-          <span><input style="width: 50px" type="text" id="credits_needed"></input></span>
-        </h3>
-      </div>
-      <div class="col-sm-6 text-right">
-        <h3>Credits Remaining: <span id="credits_remaining"></span></h3>
-      </div>
-    </div>
+    <table class="table" id="total_credits">
+      <thead>
+        <tr>
+          <th class="col-sm-5">Total Credits Needed: <span><input style="width: 50px" type="text" id="credits_needed"></input></span></th>
+          <th class="col-sm-1">Credits Remaining: <span id="credits_remaining"></span></th>
+        </tr>
+      </thead>
+    </table>
 
     <table class="table" id="intended_majors">
       <thead>
@@ -18,17 +16,21 @@
           <td colspan=5><h2>Intended Major(s)</h2></td>
         </tr>
         <tr>
-          <th class="col-sm-5">Major</th>
-          <th class="col-sm-2">Credits Needed</th>
-          <th class="col-sm-2">Credits Remaining</th>
-          <th class="col-sm-2">Major GPA</th>
+          <th class="col-sm-3">Major</th>
+          <th class="col-sm-3">Credits Needed</th>
+          <th class="col-sm-3">Credits Remaining</th>
+          <th class="col-sm-3">Major GPA</th>
           <th class="col-sm-1"></th>
         </tr>
-        </thead>
+      </thead>
+      <tfoot>
+        <tr class="add-button">
+          <td colspan=5><button class="btn btn-success" id="add_major">Add Major</button></td>
+        </tr>
+      </tfoot>
+
     </table>
-    <div class="col-md-12 add-button">
-      <button class="btn btn-success" id="add_major">Add Major</button>
-    </div>
+
 
     <table class="table" id="course_planner">
       <thead>
@@ -46,10 +48,12 @@
           <th class="col-sm-1"></th>
         </tr>
       </thead>
+      <tfoot>
+        <tr class="add-button">
+          <td colspan=7><button class="btn btn-success" id="add_course">Add Course</button></td>
+        </tr>
+      </tfoot>
     </table>
-    <div class="col-md-12 add-button">
-      <button class="btn btn-success" id="add_course">Add Course</button>
-    </div>
 
     <table class="table" id="gpa_manager">
       <tr>

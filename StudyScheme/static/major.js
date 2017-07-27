@@ -20,7 +20,7 @@ class Major {
   * @return Major
   **/
   static loadMajorFromJSON(json) {
-    return new Major(json["id"], json["name"], 
+    return new Major(json["id"], json["name"],
       json["credits_needed"], json["courses"]);
   }
 
@@ -45,9 +45,7 @@ class Major {
     var credits = 0;
     for (var course in this.courses) {
       course = this.courses[course];
-      if (course.completed()) {
         credits += course.getCredits();
-      }
     }
     return credits;
   }

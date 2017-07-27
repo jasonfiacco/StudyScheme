@@ -44,7 +44,7 @@
                       <a href={{url_for('editor')}}>My Manager</a>
                   </li>
                   <li class="page-scroll">
-                      <a href={{url_for('logout')}}>Logout</a>
+                      <a href={{url_for('logout')}}>Logout {{current_user.username}}</a>
                   </li>
                   {% endif %}
               </ul>

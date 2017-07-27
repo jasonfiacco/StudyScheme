@@ -1,3 +1,14 @@
+table:not(#total_credits) {
+  border: 5px solid black;
+  padding: 10px;
+  box-shadow: 5px 5px 5px grey;
+}
+
+table {
+  font-size: 1.2em;
+}
+
+
 .semester-selector {
   vertical-align: bottom;
 }
@@ -11,7 +22,7 @@
 }
 
 .course-credits {
-  width: 100%;
+  width: 60px;
 }
 
 .major-list-item {
@@ -53,4 +64,8 @@
 .delete-link:hover {
   color: red;
   text-decoration: none;
+}
+
+#course_planner_semester {
+  vertical-align: middle;
 }
