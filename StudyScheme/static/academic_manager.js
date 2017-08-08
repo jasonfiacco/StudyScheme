@@ -588,7 +588,7 @@ $(document).ready(function() {
     var removeMajorListButton = "tbody > .course > .contribute-majors-list" +
       " > .major-list-item > p > .remove-major";
     $("#course_planner").on("click", removeMajorListButton, function() {
-      var majorID = getIdFromHtmlId($(this).attr("id")); 
+      var majorID = getIdFromHtmlId($(this).attr("id"));
       var courseID = getIdFromHtmlId($(this).closest(".contribute-majors-list").attr("id"));
       var course = user.getCourse(courseID);
       var major = user.getMajor(majorID);
@@ -712,7 +712,7 @@ $(document).ready(function() {
         }
         refreshMajors();
         refreshInterfaceFast();
-        refreshCoursePlannerFull();        
+        refreshCoursePlannerFull();
       });
     });
   }
