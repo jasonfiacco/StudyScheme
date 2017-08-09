@@ -13,9 +13,10 @@
       {{ form.csrf_token }}
       {{ render_field(form.username )}}
       {{ render_field(form.password) }}
+    </br>
       <input type="submit" value="Submit">
-      </br>
-      <a class="btn btn-info" href="{{url_for('register')}}">Register</a>
+    </br></br>
+      Already have an account? <a href="{{url_for('register')}}">Register</a>
     </form>
   </div>
 {% endblock %}
