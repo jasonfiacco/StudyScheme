@@ -111,7 +111,7 @@ function renderMajor(major) {
   //render GPA slot
   var majorGPAData = document.createElement("td");
   majorGPAData.id = "majorGPA-" + major.getID();
-  majorGPAData.innerHTML = formatGPA(major.currentGPA());
+  majorGPAData.innerHTML = formatGPA(major.currentGPA(), 2);
 
   var deleteMajorData = document.createElement("td");
   var button = createDeleteButton("delete_major-" + major.getID(),
@@ -331,7 +331,7 @@ function refreshCreditsRemaining() {
 * Refreshes current GPA
 **/
 function refreshActualGPA() {
-  $("#actual_gpa").html(formatGPA(user.currentGPA()));
+  $("#actual_gpa").html(formatGPA(user.currentGPA(), 2));
 }
 
 /**
@@ -339,7 +339,7 @@ function refreshActualGPA() {
 **/
 function refreshAnticipatedGPA() {
   var maxSemester = $("#anticipated_GPA_semester > select").val();
-  $("#anticipated_gpa").html(formatGPA(user.anticipatedGPA(maxSemester)));
+  $("#anticipated_gpa").html(formatGPA(user.anticipatedGPA(maxSemester), 2));
 }
 
 /**
@@ -347,7 +347,7 @@ function refreshAnticipatedGPA() {
 **/
 function refreshHighestGPA() {
   var maxSemester = $("#highest_GPA_semester > select").val();
-  $("#highest_gpa").html(formatGPA(user.highestGPA(maxSemester)));
+  $("#highest_gpa").html(formatGPA(user.highestGPA(maxSemester), 2));
 }
 
 /**
@@ -693,6 +693,7 @@ $(document).ready(function() {
     * Deleting a course
     **/
     $("#course_planner > tbody").on("click", ".delete-course", function() {
+      console.log("doing stuff");
       var id = getIdFromHtmlId($(this).attr("id"));
       var course = user.getCourse(id);
       course.deleteCurrentCourse(function() {
@@ -711,6 +712,7 @@ $(document).ready(function() {
     * Deleting a major
     **/
     $("#intended_majors > tbody").on("click", ".delete-major", function() {
+      console.log("doing stuff major");
       var id = getIdFromHtmlId($(this).attr("id"));
       var major = user.getMajor(id);
       major.deleteCurrentMajor(function() {
