@@ -111,7 +111,7 @@ function renderMajor(major) {
   //render GPA slot
   var majorGPAData = document.createElement("td");
   majorGPAData.id = "majorGPA-" + major.getID();
-  majorGPAData.innerHTML(formatGPA(major.currentGPA()));
+  majorGPAData.innerHTML = formatGPA(major.currentGPA());
 
   var deleteMajorData = document.createElement("td");
   var button = createDeleteButton("delete_major-" + major.getID(),
@@ -313,10 +313,10 @@ function getIdFromHtmlId(HtmlId) {
 * @return String
 **/
 function formatGPA(gpa, digits) {
-  if (isNaN(GPA)) {
+  if (isNaN(gpa)) {
     return "--";
   } else {
-    return GPA.toFixed(digits);
+    return gpa.toFixed(digits);
   }
 }
 
