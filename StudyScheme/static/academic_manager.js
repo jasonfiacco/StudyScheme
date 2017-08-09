@@ -111,11 +111,7 @@ function renderMajor(major) {
   //render GPA slot
   var majorGPAData = document.createElement("td");
   majorGPAData.id = "majorGPA-" + major.getID();
-  if (major.currentGPA()) {
-    majorGPAData.innerHTML = major.currentGPA().toFixed(2);
-  } else {
-   majorGPAData.innerHTML = "--";
-  }
+  majorGPAData.innerHTML(formatGPA(major.currentGPA()));
 
   var deleteMajorData = document.createElement("td");
   var button = createDeleteButton("delete_major-" + major.getID(),
@@ -312,6 +308,19 @@ function getIdFromHtmlId(HtmlId) {
 }
 
 /**
+* Formats the gpa
+* @param gpa [float], digits [int]
+* @return String
+**/
+function formatGPA(gpa, digits) {
+  if (isNaN(GPA)) {
+    return "--";
+  } else {
+    return GPA.toFixed(digits);
+  }
+}
+
+/**
 * Refreshes the number of credits remaining in the interface
 **/
 function refreshCreditsRemaining() {
@@ -322,7 +331,7 @@ function refreshCreditsRemaining() {
 * Refreshes current GPA
 **/
 function refreshActualGPA() {
-  $("#actual_gpa").html(user.currentGPA().toFixed(2));
+  $("#actual_gpa").html(formatGPA(user.currentGPA()));
 }
 
 /**
@@ -330,7 +339,7 @@ function refreshActualGPA() {
 **/
 function refreshAnticipatedGPA() {
   var maxSemester = $("#anticipated_GPA_semester > select").val();
-  $("#anticipated_gpa").html(user.anticipatedGPA(maxSemester).toFixed(2));
+  $("#anticipated_gpa").html(formatGPA(user.anticipatedGPA(maxSemester)));
 }
 
 /**
@@ -338,7 +347,7 @@ function refreshAnticipatedGPA() {
 **/
 function refreshHighestGPA() {
   var maxSemester = $("#highest_GPA_semester > select").val();
-  $("#highest_gpa").html(user.highestGPA(maxSemester).toFixed(2));
+  $("#highest_gpa").html(formatGPA(user.highestGPA(maxSemester)));
 }
 
 /**
